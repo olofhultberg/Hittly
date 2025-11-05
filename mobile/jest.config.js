@@ -4,11 +4,12 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
   ],
-  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
+  testMatch: ['**/src/__tests__/**/*.test.ts', '**/src/__tests__/**/*.test.tsx'],
   collectCoverageFrom: [
-    'lib/**/*.{ts,tsx}',
-    'app/**/*.{ts,tsx}',
-    'components/**/*.{ts,tsx}',
+    'src/lib/**/*.{ts,tsx}',
+    'src/components/**/*.{ts,tsx}',
+    'src/screens/**/*.{ts,tsx}',
+    'src/hooks/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
