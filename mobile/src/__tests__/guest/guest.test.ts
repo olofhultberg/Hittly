@@ -1,4 +1,4 @@
-import { GuestMode, enableGuestMode, disableGuestMode, isGuestModeEnabled, validatePin } from ../../lib/guest/guest';
+import { GuestMode, enableGuestMode, disableGuestMode, isGuestModeEnabled, validatePin } from '../../lib/guest/guest';
 
 describe('Gästvy (Guest Mode)', () => {
   beforeEach(() => {

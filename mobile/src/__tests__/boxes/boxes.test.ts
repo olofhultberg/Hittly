@@ -1,5 +1,5 @@
-import { Box, createBox, getBox, getBoxesBySpace, updateBox, deleteBox, moveBox } from ../../lib/boxes/boxes';
-import { createSpace } from ../../lib/spaces/spaces';
+import { Box, createBox, getBox, getBoxesBySpace, updateBox, deleteBox, moveBox } from '../../lib/boxes/boxes';
+import { createSpace } from '../../lib/spaces/spaces';
 
 describe('Boxes (Lådor) CRUD', () => {
   let testSpaceId: number;
