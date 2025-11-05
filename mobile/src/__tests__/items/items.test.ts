@@ -1,6 +1,6 @@
-import { Item, createItem, getItem, updateItem, deleteItem, addTagToItem, removeTagFromItem } from '../../../lib/items/items';
-import { createSpace } from '../../../lib/spaces/spaces';
-import { createBox } from '../../../lib/boxes/boxes';
+import { Item, createItem, getItem, updateItem, deleteItem, addTagToItem, removeTagFromItem } from ../../lib/items/items';
+import { createSpace } from ../../lib/spaces/spaces';
+import { createBox } from ../../lib/boxes/boxes';
 
 describe('Items (Saker) CRUD', () => {
   let testSpaceId: number;

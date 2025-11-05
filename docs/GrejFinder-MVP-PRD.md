@@ -161,22 +161,22 @@ Exempel ZPL:
 - **Version control:** Git (frekventa commits, små steg)
 - **Repo-struktur (Monorepo):**  
   - `/mobile` – React Native (Expo) mobilapp
-    - `/src` – app-kod
+    - `/src` – all app-kod
       - `/components` – UI-komponenter
       - `/screens` – skärmar/vyer
       - `/hooks` – custom React hooks
       - `/types` – TypeScript-typer
       - `/utils` – hjälpfunktioner
-    - `/lib` – datalager, db, export
-      - `/auth` – användarhantering och autentisering
-      - `/onboarding` – onboarding-flöde
-      - `/spaces` – utrymmen CRUD
-      - `/boxes` – lådor CRUD
-      - `/items` – objekt CRUD
-      - `/search` – sökfunktionalitet
-      - `/guest` – gästvy
-      - `/db` – SQLite-databas
-    - `/__tests__` – TDD-tester
+      - `/lib` – datalager, db, export
+        - `/auth` – användarhantering och autentisering
+        - `/onboarding` – onboarding-flöde
+        - `/spaces` – utrymmen CRUD
+        - `/boxes` – lådor CRUD
+        - `/items` – objekt CRUD
+        - `/search` – sökfunktionalitet
+        - `/guest` – gästvy
+        - `/db` – SQLite-databas
+      - `/__tests__` – TDD-tester
     - `/assets` – ikoner, bilder
   - `/web` – React webbapp
     - `/src/components` – UI-komponenter

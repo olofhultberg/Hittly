@@ -5,7 +5,7 @@ import {
   validatePin,
   isOnboardingComplete,
   completeOnboarding,
-} from '../../../lib/auth/auth';
+} from '../../lib/auth/auth';
 
 describe('Auth (Användarhantering)', () => {
   beforeEach(() => {

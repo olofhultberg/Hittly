@@ -1,7 +1,7 @@
-import { searchItems } from '../../../lib/search/search';
-import { createSpace } from '../../../lib/spaces/spaces';
-import { createBox } from '../../../lib/boxes/boxes';
-import { createItem, addTagToItem } from '../../../lib/items/items';
+import { searchItems } from ../../lib/search/search';
+import { createSpace } from ../../lib/spaces/spaces';
+import { createBox } from ../../lib/boxes/boxes';
+import { createItem, addTagToItem } from ../../lib/items/items';
 
 describe('Sökfunktionalitet', () => {
   let testSpaceId: number;

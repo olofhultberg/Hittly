@@ -3,7 +3,7 @@ import {
   createFirstSpace,
   skipOnboarding,
   OnboardingSpace,
-} from '../../../lib/onboarding/onboarding';
+} from '../../lib/onboarding/onboarding';
 
 describe('Onboarding', () => {
   beforeEach(() => {

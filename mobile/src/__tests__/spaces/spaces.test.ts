@@ -1,4 +1,4 @@
-import { Space, createSpace, getSpace, getAllSpaces, updateSpace, deleteSpace } from '../../../lib/spaces/spaces';
+import { Space, createSpace, getSpace, getAllSpaces, updateSpace, deleteSpace } from ../../lib/spaces/spaces';
 
 describe('Spaces (Utrymmen) CRUD', () => {
   beforeEach(() => {
