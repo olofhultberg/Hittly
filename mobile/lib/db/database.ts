@@ -1,0 +1,108 @@
+import * as SQLite from 'expo-sqlite';
+
+let db: SQLite.SQLiteDatabase | null = null;
+
+export function getDatabase(): SQLite.SQLiteDatabase {
+  if (!db) {
+    db = SQLite.openDatabaseSync('grejfinder.db');
+    initializeDatabase(db);
+  }
+  return db;
+}
+
+function initializeDatabase(db: SQLite.SQLiteDatabase): void {
+  // Skapa tabeller
+  db.execSync(`
+    CREATE TABLE IF NOT EXISTS spaces (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS zones (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      space_id INTEGER NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (space_id) REFERENCES spaces(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS boxes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      space_id INTEGER NOT NULL,
+      zone_id INTEGER,
+      label_code TEXT UNIQUE,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (space_id) REFERENCES spaces(id) ON DELETE CASCADE,
+      FOREIGN KEY (zone_id) REFERENCES zones(id) ON DELETE SET NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      space_id INTEGER NOT NULL,
+      zone_id INTEGER,
+      box_id INTEGER NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (space_id) REFERENCES spaces(id) ON DELETE CASCADE,
+      FOREIGN KEY (zone_id) REFERENCES zones(id) ON DELETE SET NULL,
+      FOREIGN KEY (box_id) REFERENCES boxes(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS tags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS item_tags (
+      item_id INTEGER NOT NULL,
+      tag_id INTEGER NOT NULL,
+      PRIMARY KEY (item_id, tag_id),
+      FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE,
+      FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS item_images (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL,
+      uri TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS guests_local (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pin TEXT NOT NULL,
+      enabled INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
+export function resetDatabase(): void {
+  if (db) {
+    db.closeSync();
+    db = null;
+  }
+  // I test-miljön kan vi återställa databasen
+  const testDb = SQLite.openDatabaseSync('grejfinder.db');
+  testDb.execSync(`
+    DROP TABLE IF EXISTS item_tags;
+    DROP TABLE IF EXISTS item_images;
+    DROP TABLE IF EXISTS items;
+    DROP TABLE IF EXISTS tags;
+    DROP TABLE IF EXISTS boxes;
+    DROP TABLE IF EXISTS zones;
+    DROP TABLE IF EXISTS spaces;
+    DROP TABLE IF EXISTS guests_local;
+  `);
+  testDb.closeSync();
+}
+
