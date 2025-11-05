@@ -13,6 +13,20 @@ export function getDatabase(): SQLite.SQLiteDatabase {
 function initializeDatabase(db: SQLite.SQLiteDatabase): void {
   // Skapa tabeller
   db.execSync(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pin_hash TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS onboarding_status (
+      id INTEGER PRIMARY KEY,
+      is_complete INTEGER DEFAULT 0,
+      first_space_created INTEGER DEFAULT 0,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS spaces (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -102,6 +116,8 @@ export function resetDatabase(): void {
     DROP TABLE IF EXISTS zones;
     DROP TABLE IF EXISTS spaces;
     DROP TABLE IF EXISTS guests_local;
+    DROP TABLE IF EXISTS onboarding_status;
+    DROP TABLE IF EXISTS users;
   `);
   testDb.closeSync();
 }
