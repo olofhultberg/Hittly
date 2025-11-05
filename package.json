@@ -1,0 +1,8 @@
+{
+  "name": "GrejFinder",
+  "version": "0.0.1",
+  "description": "Hitta dina grejer",
+  "main": "index.tsx",
+  "author": "Olof Hultberg <olof.hultberg@grafokett.se>",
+  "license": "MIT"
+}
