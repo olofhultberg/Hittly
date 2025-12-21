@@ -23,6 +23,7 @@ export interface UpdateBoxInput {
   name?: string;
   spaceId?: number;
   zoneId?: number | null;
+  imageUri?: string | null;
 }
 
 function generateLabelCode(): string {
@@ -184,17 +185,32 @@ export async function updateBox(id: number, input: UpdateBoxInput): Promise<Box 
     values.push(input.zoneId || null);
   }
 
-  if (updates.length === 0) {
+  // Hantera bilduppdatering
+  if (input.imageUri !== undefined) {
+    // Ta bort gamla bilder
+    db.runSync('DELETE FROM box_images WHERE box_id = ?', [id]);
+    
+    // Lägg till ny bild om den finns
+    if (input.imageUri) {
+      db.runSync(
+        'INSERT INTO box_images (box_id, uri) VALUES (?, ?)',
+        [id, input.imageUri]
+      );
+    }
+  }
+
+  if (updates.length === 0 && input.imageUri === undefined) {
     return existing;
   }
 
-  updates.push('updated_at = CURRENT_TIMESTAMP');
-  values.push(id);
-
-  db.runSync(
-    `UPDATE boxes SET ${updates.join(', ')} WHERE id = ?`,
-    values
-  );
+  if (updates.length > 0) {
+    updates.push('updated_at = CURRENT_TIMESTAMP');
+    values.push(id);
+    db.runSync(
+      `UPDATE boxes SET ${updates.join(', ')} WHERE id = ?`,
+      values
+    );
+  }
 
   return await getBox(id);
 }

@@ -21,9 +21,10 @@ import * as FileSystem from 'expo-file-system/legacy';
 interface SpaceDetailScreenProps {
   spaceId: number;
   onBack: () => void;
+  onBoxSelect?: (boxId: number) => void;
 }
 
-export function SpaceDetailScreen({ spaceId, onBack }: SpaceDetailScreenProps) {
+export function SpaceDetailScreen({ spaceId, onBack, onBoxSelect }: SpaceDetailScreenProps) {
   const [boxes, setBoxes] = useState<Box[]>([]);
   const [space, setSpace] = useState<{ id: number; name: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -183,7 +184,11 @@ export function SpaceDetailScreen({ spaceId, onBack }: SpaceDetailScreenProps) {
         ) : (
           <View style={styles.boxesList}>
             {boxes.map((box) => (
-              <TouchableOpacity key={box.id} style={styles.boxCard}>
+              <TouchableOpacity
+                key={box.id}
+                style={styles.boxCard}
+                onPress={() => onBoxSelect?.(box.id)}
+              >
                 {box.imageUri ? (
                   <Image source={{ uri: box.imageUri }} style={styles.boxImage} />
                 ) : (
