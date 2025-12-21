@@ -1,5 +1,5 @@
 {
-  "name": "grejfinder-web",
+  "name": "findly-web",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -13,3 +13,4 @@
     "typescript": "^5.9.2"
   }
 }
+

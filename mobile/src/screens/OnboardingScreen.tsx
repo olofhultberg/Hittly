@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { Logo } from '../components/Logo';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { Button } from '../components/Button';
 import { createFirstSpace, skipOnboarding } from '../lib/onboarding/onboarding';
 
@@ -44,19 +44,15 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
+      <ScreenHeader
+        title="Välkommen till Findly!"
+        description="För att komma igång, skapa ditt första utrymme där du kan organisera dina grejer."
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.header}>
-          <Logo />
-        </View>
-
         <View style={styles.content}>
-          <Text style={styles.title}>Välkommen till Findly!</Text>
-          <Text style={styles.subtitle}>
-            För att komma igång, skapa ditt första utrymme där du kan organisera dina grejer.
-          </Text>
 
           <View style={styles.form}>
             <Text style={styles.label}>Namn på utrymme</Text>
@@ -97,30 +93,12 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingTop: 60,
     paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 48,
-    alignItems: 'center',
+    paddingTop: 20,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#64748B',
-    marginBottom: 32,
-    textAlign: 'center',
-    lineHeight: 24,
   },
   form: {
     width: '100%',

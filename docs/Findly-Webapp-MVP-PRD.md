@@ -1,4 +1,4 @@
-# 📦 GrejFinder – MVP Web APP
+# 📦 Findly – MVP Web APP
 
 ## 1. Översikt
 

@@ -54,13 +54,13 @@ const largeStyles = StyleSheet.create({
     gap: 16,
   },
   logoImage: {
-    width: 80,
-    height: 80,
+    width: 120,
+    height: 120,
   },
   text: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: 36,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });
 

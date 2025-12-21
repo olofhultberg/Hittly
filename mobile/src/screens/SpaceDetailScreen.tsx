@@ -12,6 +12,7 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { Button } from '../components/Button';
 import { getBoxesBySpace, createBox, Box } from '../lib/boxes/boxes';
 import { getSpace } from '../lib/spaces/spaces';
@@ -156,24 +157,18 @@ export function SpaceDetailScreen({ spaceId, onBack, onBoxSelect }: SpaceDetailS
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Tillbaka</Text>
-        </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
-            {space?.name || 'Laddar...'}
-          </Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
-            Lådor i utrymmet
-          </Text>
-        </View>
-        <Button
-          title="+ Lägg till"
-          onPress={() => setShowAddModal(true)}
-          variant="primary"
-        />
-      </View>
+      <ScreenHeader
+        title={space?.name || 'Laddar...'}
+        description="Lådor i utrymmet"
+        onBack={onBack}
+        rightAction={
+          <Button
+            title="+ Lägg till"
+            onPress={() => setShowAddModal(true)}
+            variant="primary"
+          />
+        }
+      />
 
       <ScrollView style={styles.content}>
         {loading ? (
@@ -296,39 +291,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    gap: 12,
-  },
-  backButton: {
-    padding: 8,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#2563EB',
-    fontWeight: '500',
-  },
-  headerTitleContainer: {
-    flex: 1,
-    minWidth: 0, // Viktigt för att flex ska fungera korrekt med text truncation
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 2,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#64748B',
   },
   content: {
     flex: 1,

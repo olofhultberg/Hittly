@@ -22,7 +22,7 @@ function hashPin(pin: string): string {
     hash = hash & hash; // Convert to 32bit integer
   }
   // Lägg till salt och konvertera till hex
-  const salted = `grejfinder_${pin}_${hash}`;
+  const salted = `findly_${pin}_${hash}`;
   let hexHash = '';
   for (let i = 0; i < salted.length; i++) {
     hexHash += salted.charCodeAt(i).toString(16);

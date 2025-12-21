@@ -1,9 +1,9 @@
-# 📦 GrejFinder – MVP PRD Smartphone APP
+# 📦 Findly – MVP PRD Smartphone APP
 
 ## 1. Översikt
 
 **Syfte:**  
-GrejFinder-appen hjälper användare hålla ordning på saker som förvaras i förråd, vindar och källare.  
+Findly-appen hjälper användare hålla ordning på saker som förvaras i förråd, vindar och källare.  
 Appen låter dig skapa struktur (Utrymmen, Lådor, Saker), spara bilder och beskrivningar, och hitta saker snabbt.  
 MVP:n ska vara **offline-first** och fungera utan backend.
 
@@ -228,7 +228,7 @@ Exempel ZPL:
 3. Kör `npx create-expo-app` + installera kärnpaket.  
 4. Skapa migrationsfil för SQLite.  
 5. Börja med "Spaces → Boxes → Items"-flödet.  
-6. Skapa web app som kommer kunna "spegla" ditt konto i GrejFinder
+6. Skapa web app som kommer kunna "spegla" ditt konto i Findly
 7. Lägg in i samma repo
 ---
 

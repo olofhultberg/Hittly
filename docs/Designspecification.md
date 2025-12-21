@@ -1,13 +1,13 @@
-# 🎨 Designspecifikation – GrejFinder
+# 🎨 Designspecifikation – Findly
 
 ## 1. Varumärke och känsla
 
-**Namn:** GrejFinder  
+**Namn:** Findly  
 **Tagline (förslag):** Hitta grejerna. Håll ordning.  
 **Ton:** Lekfull, hjälpsam, smart och pålitlig.  
 **Kärnkänsla:** Struktur utan stress – ett digitalt förråd med glimten i ögat.
 
-GrejFinder ska kännas lättanvänd, lugn och modern.  
+Findly ska kännas lättanvänd, lugn och modern.  
 Appen ska inge känslan av “jag hittar alltid det jag letar efter”.
 
 ---
@@ -53,7 +53,7 @@ Appikon:
 
 Splashscreen:
 	•	Blå gradient (mörk till ljus).
-	•	Ikon centrerad, appnamnet GrejFinder i vit text under.
+	•	Ikon centrerad, appnamnet Findly i vit text under.
 	•	Font: Semibold, rundad sans-serif (SF Pro / Inter).
 
 Format:
@@ -186,8 +186,8 @@ Feather
 13. Ikonfilnamn (för Expo-konfiguration)
 {
   "expo": {
-    "name": "GrejFinder",
-    "slug": "grejfinder",
+    "name": "Findly",
+    "slug": "findly",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",

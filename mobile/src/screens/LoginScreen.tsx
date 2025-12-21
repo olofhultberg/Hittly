@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { Logo } from '../components/Logo';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { PinInput } from '../components/PinInput';
 import { Button } from '../components/Button';
 import { validatePin, getUser, createUser } from '../lib/auth/auth';
@@ -83,23 +83,17 @@ export function LoginScreen({ onLoginSuccess, onShowOnboarding }: LoginScreenPro
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
+      <ScreenHeader
+        title={isFirstTime ? 'Skapa PIN' : 'Logga in'}
+        description={isFirstTime
+          ? 'Välj ett 4-siffrigt PIN för att skydda dina grejer'
+          : 'Ange ditt 4-siffriga PIN'}
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.header}>
-          <Logo />
-        </View>
-        
         <View style={styles.content}>
-          <Text style={styles.title}>
-            {isFirstTime ? 'Skapa PIN' : 'Logga in'}
-          </Text>
-          <Text style={styles.subtitle}>
-            {isFirstTime
-              ? 'Välj ett 4-siffrigt PIN för att skydda dina grejer'
-              : 'Ange ditt 4-siffriga PIN'}
-          </Text>
 
           <View style={styles.pinContainer}>
             <PinInput pin={pin} onPinChange={setPin} error={error} />
@@ -117,31 +111,13 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingTop: 60,
     paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 48,
-    alignItems: 'center',
+    paddingTop: 20,
   },
   content: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '600',
-    color: '#0F172A',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#64748B',
-    marginBottom: 48,
-    textAlign: 'center',
-    paddingHorizontal: 20,
   },
   pinContainer: {
     width: '100%',

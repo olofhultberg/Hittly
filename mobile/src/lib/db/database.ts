@@ -14,7 +14,7 @@ export function getDatabase(): SQLite.SQLiteDatabase {
       );
     }
     
-    db = SQLite.openDatabaseSync('grejfinder.db');
+    db = SQLite.openDatabaseSync('findly.db');
     initializeDatabase(db);
   }
   return db;
@@ -133,7 +133,7 @@ export function resetDatabase(): void {
     db = null;
   }
   // I test-miljön kan vi återställa databasen
-  const testDb = SQLite.openDatabaseSync('grejfinder.db');
+  const testDb = SQLite.openDatabaseSync('findly.db');
   testDb.execSync(`
     DROP TABLE IF EXISTS item_tags;
     DROP TABLE IF EXISTS item_images;

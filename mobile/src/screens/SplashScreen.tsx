@@ -1,11 +1,17 @@
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LogoLarge } from '../components/Logo';
 
 export function SplashScreen() {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#1e3a8a', '#3b82f6']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={styles.container}
+    >
       <LogoLarge />
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -14,7 +20,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    width: '100%',
+    height: '100%',
   },
 });
 

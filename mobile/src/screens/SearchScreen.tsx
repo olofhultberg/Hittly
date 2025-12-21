@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { Button } from '../components/Button';
 import { searchItems, SearchFilters } from '../lib/search/search';
 import { Item } from '../lib/items/items';
@@ -109,24 +110,18 @@ export function SearchScreen({ onBack, onItemSelect }: SearchScreenProps) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Tillbaka</Text>
-        </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
-            Sök
-          </Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
-            Hitta dina grejer
-          </Text>
-        </View>
-        <Button
-          title={showFilters ? 'Dölj filter' : 'Filter'}
-          onPress={() => setShowFilters(!showFilters)}
-          variant="secondary"
-        />
-      </View>
+      <ScreenHeader
+        title="Sök"
+        description="Hitta dina grejer"
+        onBack={onBack}
+        rightAction={
+          <Button
+            title={showFilters ? 'Dölj filter' : 'Filter'}
+            onPress={() => setShowFilters(!showFilters)}
+            variant="secondary"
+          />
+        }
+      />
 
       <View style={styles.searchContainer}>
         <TextInput
@@ -300,39 +295,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    gap: 12,
-  },
-  backButton: {
-    padding: 8,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#2563EB',
-    fontWeight: '500',
-  },
-  headerTitleContainer: {
-    flex: 1,
-    minWidth: 0,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 2,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#64748B',
-  },
   searchContainer: {
     padding: 20,
     backgroundColor: '#FFFFFF',
@@ -473,4 +435,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 

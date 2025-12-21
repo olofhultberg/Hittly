@@ -12,6 +12,7 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { Button } from '../components/Button';
 import { getBox, updateBox, Box } from '../lib/boxes/boxes';
 import { getItemsByBox, createItem, Item } from '../lib/items/items';
@@ -256,11 +257,10 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
   if (loading) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Text style={styles.backButtonText}>← Tillbaka</Text>
-          </TouchableOpacity>
-        </View>
+        <ScreenHeader
+          title="Laddar..."
+          onBack={onBack}
+        />
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Laddar...</Text>
         </View>
@@ -271,11 +271,10 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
   if (!box) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Text style={styles.backButtonText}>← Tillbaka</Text>
-          </TouchableOpacity>
-        </View>
+        <ScreenHeader
+          title="Låda hittades inte"
+          onBack={onBack}
+        />
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Låda hittades inte</Text>
         </View>
@@ -285,24 +284,18 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Tillbaka</Text>
-        </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
-            {box.name}
-          </Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
-            {box.labelCode}
-          </Text>
-        </View>
-        <Button
-          title="Redigera"
-          onPress={() => setShowEditModal(true)}
-          variant="secondary"
-        />
-      </View>
+      <ScreenHeader
+        title={box.name}
+        description={box.labelCode}
+        onBack={onBack}
+        rightAction={
+          <Button
+            title="Redigera"
+            onPress={() => setShowEditModal(true)}
+            variant="secondary"
+          />
+        }
+      />
 
       <ScrollView style={styles.content}>
         {/* Lådans bild */}
@@ -534,39 +527,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    gap: 12,
-  },
-  backButton: {
-    padding: 8,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#2563EB',
-    fontWeight: '500',
-  },
-  headerTitleContainer: {
-    flex: 1,
-    minWidth: 0, // Viktigt för att flex ska fungera korrekt med text truncation
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 2,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#64748B',
   },
   loadingContainer: {
     flex: 1,

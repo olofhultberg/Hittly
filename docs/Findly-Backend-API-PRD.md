@@ -1,4 +1,4 @@
-# 📦 GrejFinder – MVP Backend API
+# 📦 Findly – MVP Backend API
 
 ## 1. Översikt
 
