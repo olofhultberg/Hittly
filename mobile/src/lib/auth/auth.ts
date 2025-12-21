@@ -1,5 +1,5 @@
 import { getDatabase } from '../db/database';
-import * as Crypto from 'expo-crypto';
+import { createHash } from 'react-native-quick-crypto';
 
 export interface User {
   id: number;
@@ -12,12 +12,10 @@ export interface User {
 /**
  * Hashat PIN för säker lagring
  */
-async function hashPin(pin: string): Promise<string> {
-  const digest = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    pin
-  );
-  return digest;
+function hashPin(pin: string): string {
+  const hash = createHash('sha256');
+  hash.update(pin);
+  return hash.digest('hex');
 }
 
 /**
@@ -45,7 +43,7 @@ export async function createUser(pin: string): Promise<User> {
     throw new Error('Användare finns redan');
   }
 
-  const pinHash = await hashPin(pin);
+  const pinHash = hashPin(pin);
 
   db.runSync('INSERT INTO users (pin_hash) VALUES (?)', [pinHash]);
 
@@ -149,7 +147,7 @@ export async function validatePin(pin: string): Promise<boolean> {
     throw new Error('Ingen användare finns');
   }
 
-  const pinHash = await hashPin(pin);
+  const pinHash = hashPin(pin);
   return pinHash === user.pin_hash;
 }
 
