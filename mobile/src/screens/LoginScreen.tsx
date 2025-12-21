@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Logo } from '../components/Logo';
 import { PinInput } from '../components/PinInput';
 import { Button } from '../components/Button';
@@ -78,26 +78,35 @@ export function LoginScreen({ onLoginSuccess, onShowOnboarding }: LoginScreenPro
   }, [pin]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Logo />
-      </View>
-      
-      <View style={styles.content}>
-        <Text style={styles.title}>
-          {isFirstTime ? 'Skapa PIN' : 'Logga in'}
-        </Text>
-        <Text style={styles.subtitle}>
-          {isFirstTime
-            ? 'Välj ett 4-siffrigt PIN för att skydda dina grejer'
-            : 'Ange ditt 4-siffriga PIN'}
-        </Text>
-
-        <View style={styles.pinContainer}>
-          <PinInput pin={pin} onPinChange={setPin} error={error} />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.header}>
+          <Logo />
         </View>
-      </View>
-    </View>
+        
+        <View style={styles.content}>
+          <Text style={styles.title}>
+            {isFirstTime ? 'Skapa PIN' : 'Logga in'}
+          </Text>
+          <Text style={styles.subtitle}>
+            {isFirstTime
+              ? 'Välj ett 4-siffrigt PIN för att skydda dina grejer'
+              : 'Ange ditt 4-siffriga PIN'}
+          </Text>
+
+          <View style={styles.pinContainer}>
+            <PinInput pin={pin} onPinChange={setPin} error={error} />
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -105,6 +114,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingTop: 60,
     paddingHorizontal: 20,
   },

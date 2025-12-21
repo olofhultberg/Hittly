@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Logo } from '../components/Logo';
 import { Button } from '../components/Button';
 import { createFirstSpace, skipOnboarding } from '../lib/onboarding/onboarding';
@@ -39,45 +39,54 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Logo />
-      </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.header}>
+          <Logo />
+        </View>
 
-      <View style={styles.content}>
-        <Text style={styles.title}>Välkommen till GrejFinder!</Text>
-        <Text style={styles.subtitle}>
-          För att komma igång, skapa ditt första utrymme där du kan organisera dina grejer.
-        </Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>Välkommen till GrejFinder!</Text>
+          <Text style={styles.subtitle}>
+            För att komma igång, skapa ditt första utrymme där du kan organisera dina grejer.
+          </Text>
 
-        <View style={styles.form}>
-          <Text style={styles.label}>Namn på utrymme</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="t.ex. Vinden, Förråd, Källare"
-            value={spaceName}
-            onChangeText={setSpaceName}
-            autoFocus
-            editable={!loading}
-          />
-
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Skapa utrymme"
-              onPress={handleCreateSpace}
-              loading={loading}
-              disabled={!spaceName.trim()}
+          <View style={styles.form}>
+            <Text style={styles.label}>Namn på utrymme</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="t.ex. Vinden, Förråd, Källare"
+              value={spaceName}
+              onChangeText={setSpaceName}
+              autoFocus
+              editable={!loading}
             />
-            <Button
-              title="Hoppa över"
-              onPress={handleSkip}
-              variant="ghost"
-              disabled={loading}
-            />
+
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Skapa utrymme"
+                onPress={handleCreateSpace}
+                loading={loading}
+                disabled={!spaceName.trim()}
+              />
+              <Button
+                title="Hoppa över"
+                onPress={handleSkip}
+                variant="ghost"
+                disabled={loading}
+              />
+            </View>
           </View>
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -85,6 +94,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingTop: 60,
     paddingHorizontal: 20,
   },
