@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { DashboardScreen } from './src/screens/DashboardScreen';
-import { HomeScreen } from './src/screens/HomeScreen';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { useAuth } from './src/hooks/useAuth';
 
 export default function App() {
@@ -24,7 +24,7 @@ export default function App() {
   if (authState === 'onboarding') {
     return (
       <>
-        <HomeScreen />
+        <OnboardingScreen onComplete={completeOnboarding} />
         <StatusBar style="auto" />
       </>
     );
