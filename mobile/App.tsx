@@ -1,19 +1,39 @@
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { DashboardScreen } from './src/screens/DashboardScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { SpaceDetailScreen } from './src/screens/SpaceDetailScreen';
 import { BoxDetailScreen } from './src/screens/BoxDetailScreen';
+import { SplashScreen } from './src/screens/SplashScreen';
 import { useAuth } from './src/hooks/useAuth';
 
 export default function App() {
   const { authState, login, logout, startOnboarding, completeOnboarding } = useAuth();
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | null>(null);
   const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Visa splash screen i 2 sekunder
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   console.log('App - authState:', authState);
+
+  if (showSplash) {
+    return (
+      <>
+        <SplashScreen />
+        <StatusBar style="auto" />
+      </>
+    );
+  }
 
   if (authState === 'checking') {
     return (

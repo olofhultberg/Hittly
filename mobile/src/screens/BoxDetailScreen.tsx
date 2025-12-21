@@ -34,6 +34,7 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
   const [saving, setSaving] = useState(false);
   const [itemName, setItemName] = useState('');
   const [itemDescription, setItemDescription] = useState('');
+  const [itemImageUri, setItemImageUri] = useState<string | null>(null);
   const [creatingItem, setCreatingItem] = useState(false);
 
   useEffect(() => {
@@ -158,6 +159,56 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
     }
   };
 
+  const pickItemImage = async () => {
+    const hasPermission = await requestImagePermission();
+    if (!hasPermission) return;
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setItemImageUri(result.assets[0].uri);
+    }
+  };
+
+  const takeItemPhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        'Behörighet krävs',
+        'Vi behöver tillgång till kameran för att kunna ta foto på grejen.'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setItemImageUri(result.assets[0].uri);
+    }
+  };
+
+  const showItemImageOptions = () => {
+    Alert.alert(
+      'Välj bild',
+      'Hur vill du lägga till bild?',
+      [
+        { text: 'Avbryt', style: 'cancel' },
+        { text: 'Ta foto', onPress: takeItemPhoto },
+        { text: 'Välj från bibliotek', onPress: pickItemImage },
+        ...(itemImageUri ? [{ text: 'Ta bort bild', style: 'destructive', onPress: () => setItemImageUri(null) }] : []),
+      ]
+    );
+  };
+
   const handleCreateItem = async () => {
     if (!itemName.trim()) {
       Alert.alert('Fel', 'Ange ett namn för grejen');
@@ -168,16 +219,31 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
 
     setCreatingItem(true);
     try {
+      let finalImageUri = itemImageUri;
+
+      // Kopiera bilden till appens dokumentkatalog om den finns
+      if (itemImageUri && itemImageUri.startsWith('file://')) {
+        const fileName = `item_${Date.now()}.jpg`;
+        const newPath = `${FileSystem.documentDirectory}${fileName}`;
+        await FileSystem.copyAsync({
+          from: itemImageUri,
+          to: newPath,
+        });
+        finalImageUri = newPath;
+      }
+
       await createItem({
         name: itemName.trim(),
         description: itemDescription.trim(),
         spaceId: box.spaceId,
         zoneId: box.zoneId || null,
         boxId: box.id,
+        imageUri: finalImageUri || null,
       });
 
       setItemName('');
       setItemDescription('');
+      setItemImageUri(null);
       setShowAddItemModal(false);
       await loadData();
     } catch (error: any) {
@@ -224,8 +290,12 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
           <Text style={styles.backButtonText}>← Tillbaka</Text>
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>{box.name}</Text>
-          <Text style={styles.headerSubtitle}>{box.labelCode}</Text>
+          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+            {box.name}
+          </Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+            {box.labelCode}
+          </Text>
         </View>
         <Button
           title="Redigera"
@@ -266,14 +336,19 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
             </View>
           ) : (
             <View style={styles.itemsList}>
-              {items.map((item) => (
-                <View key={item.id} style={styles.itemCard}>
+            {items.map((item) => (
+              <View key={item.id} style={styles.itemCard}>
+                {item.imageUri ? (
+                  <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
+                ) : null}
+                <View style={styles.itemInfo}>
                   <Text style={styles.itemName}>{item.name}</Text>
                   {item.description ? (
                     <Text style={styles.itemDescription}>{item.description}</Text>
                   ) : null}
                 </View>
-              ))}
+              </View>
+            ))}
             </View>
           )}
         </View>
@@ -376,6 +451,7 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
                 setShowAddItemModal(false);
                 setItemName('');
                 setItemDescription('');
+                setItemImageUri(null);
               }}
             >
               <Text style={styles.modalClose}>Stäng</Text>
@@ -408,6 +484,26 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
               />
             </View>
 
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Bild (valfritt)</Text>
+              {itemImageUri ? (
+                <View style={styles.imagePreviewContainer}>
+                  <Image source={{ uri: itemImageUri }} style={styles.imagePreview} />
+                  <Button
+                    title="Ändra bild"
+                    onPress={showItemImageOptions}
+                    variant="secondary"
+                  />
+                </View>
+              ) : (
+                <Button
+                  title="+ Lägg till bild"
+                  onPress={showItemImageOptions}
+                  variant="ghost"
+                />
+              )}
+            </View>
+
             <View style={styles.modalButtons}>
               <Button
                 title="Lägg till"
@@ -421,6 +517,7 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
                   setShowAddItemModal(false);
                   setItemName('');
                   setItemDescription('');
+                  setItemImageUri(null);
                 }}
                 variant="ghost"
                 disabled={creatingItem}
@@ -459,6 +556,7 @@ const styles = StyleSheet.create({
   },
   headerTitleContainer: {
     flex: 1,
+    minWidth: 0, // Viktigt för att flex ska fungera korrekt med text truncation
   },
   headerTitle: {
     fontSize: 24,
@@ -539,7 +637,6 @@ const styles = StyleSheet.create({
   },
   itemCard: {
     backgroundColor: '#FFFFFF',
-    padding: 16,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -548,6 +645,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+    overflow: 'hidden',
+  },
+  itemImage: {
+    width: '100%',
+    height: 200,
+    backgroundColor: '#F1F5F9',
+  },
+  itemInfo: {
+    padding: 16,
   },
   itemName: {
     fontSize: 18,

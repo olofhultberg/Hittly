@@ -5,7 +5,7 @@ export function Logo({ withText = true }: { withText?: boolean }) {
           {/* enkel ikon – låda + lupp (emoji fallback) */}
           <span className="text-white text-lg">🔍</span>
         </div>
-        {withText && <span className="text-xl font-semibold">GrejFinder</span>}
+        {withText && <span className="text-xl font-semibold">Findly</span>}
       </div>
     );
   }

@@ -14,6 +14,7 @@ export interface Item {
   zoneId?: number | null;
   boxId: number;
   tags?: Tag[];
+  imageUri?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -24,6 +25,7 @@ export interface CreateItemInput {
   spaceId: number;
   zoneId?: number | null;
   boxId: number;
+  imageUri?: string | null;
 }
 
 export interface UpdateItemInput {
@@ -57,7 +59,17 @@ export async function createItem(input: CreateItemInput): Promise<Item> {
     ]
   );
 
-  const item = await getItem(result.lastInsertRowId);
+  const itemId = result.lastInsertRowId;
+
+  // Spara bild om den finns
+  if (input.imageUri) {
+    db.runSync(
+      'INSERT INTO item_images (item_id, uri) VALUES (?, ?)',
+      [itemId, input.imageUri]
+    );
+  }
+
+  const item = await getItem(itemId);
   if (!item) {
     throw new Error('Kunde inte skapa objekt');
   }
@@ -90,6 +102,12 @@ export async function getItem(id: number): Promise<Item | null> {
     [id]
   );
 
+  // Hämta bild-URI om den finns
+  const imageResult = db.getFirstSync<{ uri: string }>(
+    'SELECT uri FROM item_images WHERE item_id = ? ORDER BY created_at DESC LIMIT 1',
+    [id]
+  );
+
   return {
     id: result.id,
     name: result.name,
@@ -98,6 +116,7 @@ export async function getItem(id: number): Promise<Item | null> {
     zoneId: result.zone_id,
     boxId: result.box_id,
     tags: (tags || []).map((t) => ({ id: t.id, name: t.name })),
+    imageUri: imageResult?.uri || null,
     created_at: result.created_at,
     updated_at: result.updated_at,
   };
@@ -116,13 +135,18 @@ export async function getItemsByBox(boxId: number): Promise<Item[]> {
     updated_at?: string;
   }>('SELECT * FROM items WHERE box_id = ? ORDER BY name ASC', [boxId]);
 
-  // Hämta taggar för alla objekt
+  // Hämta taggar och bilder för alla objekt
   const items = await Promise.all(
     (results || []).map(async (r) => {
       const tags = db.getAllSync<{ id: number; name: string }>(
         `SELECT t.id, t.name FROM tags t
          INNER JOIN item_tags it ON t.id = it.tag_id
          WHERE it.item_id = ?`,
+        [r.id]
+      );
+
+      const imageResult = db.getFirstSync<{ uri: string }>(
+        'SELECT uri FROM item_images WHERE item_id = ? ORDER BY created_at DESC LIMIT 1',
         [r.id]
       );
 
@@ -134,6 +158,7 @@ export async function getItemsByBox(boxId: number): Promise<Item[]> {
         zoneId: r.zone_id,
         boxId: r.box_id,
         tags: (tags || []).map((t) => ({ id: t.id, name: t.name })),
+        imageUri: imageResult?.uri || null,
         created_at: r.created_at,
         updated_at: r.updated_at,
       };

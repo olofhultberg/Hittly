@@ -35,8 +35,12 @@ export function DashboardScreen({ onLogout, onSpaceSelect }: DashboardScreenProp
         <View style={styles.headerLeft}>
           <Logo />
           <View style={styles.headerTitleContainer}>
-            <Text style={styles.headerTitle}>Dashboard</Text>
-            <Text style={styles.headerSubtitle}>Översikt över dina grejer</Text>
+            <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+              Dashboard
+            </Text>
+            <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+              Översikt över dina grejer
+            </Text>
           </View>
         </View>
         <Button
@@ -158,6 +162,7 @@ const styles = StyleSheet.create({
   },
   headerTitleContainer: {
     flex: 1,
+    minWidth: 0, // Viktigt för att flex ska fungera korrekt med text truncation
   },
   headerTitle: {
     fontSize: 24,

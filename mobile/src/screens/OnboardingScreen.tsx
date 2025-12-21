@@ -53,7 +53,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>Välkommen till GrejFinder!</Text>
+          <Text style={styles.title}>Välkommen till Findly!</Text>
           <Text style={styles.subtitle}>
             För att komma igång, skapa ditt första utrymme där du kan organisera dina grejer.
           </Text>

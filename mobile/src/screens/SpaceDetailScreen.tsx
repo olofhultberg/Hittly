@@ -161,8 +161,12 @@ export function SpaceDetailScreen({ spaceId, onBack, onBoxSelect }: SpaceDetailS
           <Text style={styles.backButtonText}>← Tillbaka</Text>
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>{space?.name || 'Laddar...'}</Text>
-          <Text style={styles.headerSubtitle}>Lådor i utrymmet</Text>
+          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+            {space?.name || 'Laddar...'}
+          </Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+            Lådor i utrymmet
+          </Text>
         </View>
         <Button
           title="+ Lägg till"
@@ -314,6 +318,7 @@ const styles = StyleSheet.create({
   },
   headerTitleContainer: {
     flex: 1,
+    minWidth: 0, // Viktigt för att flex ska fungera korrekt med text truncation
   },
   headerTitle: {
     fontSize: 24,

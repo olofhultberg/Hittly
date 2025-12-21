@@ -1,6 +1,6 @@
-# GrejFinder
+# Findly
 
-Monorepo-struktur för GrejFinder-projektet.
+Monorepo-struktur för Findly-projektet.
 
 ## Struktur
 

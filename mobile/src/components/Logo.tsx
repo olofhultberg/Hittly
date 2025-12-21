@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
 interface LogoProps {
   withText?: boolean;
@@ -7,10 +7,12 @@ interface LogoProps {
 export function Logo({ withText = true }: LogoProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Text style={styles.icon}>📦</Text>
-      </View>
-      {withText && <Text style={styles.text}>GrejFinder</Text>}
+      <Image
+        source={require('../../assets/findly-logo.png')}
+        style={styles.logoImage}
+        resizeMode="contain"
+      />
+      {withText && <Text style={styles.text}>Findly</Text>}
     </View>
   );
 }
@@ -21,20 +23,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  iconContainer: {
+  logoImage: {
     width: 32,
     height: 32,
-    borderRadius: 8,
-    backgroundColor: '#2563EB',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 18,
   },
   text: {
     fontSize: 20,
     fontWeight: '600',
+    color: '#0F172A',
+  },
+});
+
+// Export för splash screen med större logo
+export const LogoLarge = () => {
+  return (
+    <View style={largeStyles.container}>
+      <Image
+        source={require('../../assets/findly-logo.png')}
+        style={largeStyles.logoImage}
+        resizeMode="contain"
+      />
+      <Text style={largeStyles.text}>Findly</Text>
+    </View>
+  );
+};
+
+const largeStyles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    gap: 16,
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
+  },
+  text: {
+    fontSize: 32,
+    fontWeight: '700',
     color: '#0F172A',
   },
 });
