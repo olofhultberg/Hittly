@@ -51,24 +51,7 @@ jest.mock('expo-image-picker', () => ({
   },
 }), { virtual: true });
 
-// Mock react-native-quick-crypto
-jest.mock('react-native-quick-crypto', () => {
-  const crypto = require('crypto');
-  return {
-    createHash: jest.fn((algorithm) => {
-      const hash = crypto.createHash(algorithm);
-      return {
-        update: jest.fn((data) => {
-          hash.update(data);
-          return {
-            digest: jest.fn((encoding) => hash.digest(encoding)),
-          };
-        }),
-        digest: jest.fn((encoding) => hash.digest(encoding)),
-      };
-    }),
-  };
-}, { virtual: true });
+// Hash-funktionen är nu enkel JavaScript, inga mocks behövs
 
 // Reset mock-databasen mellan tester
 beforeEach(() => {
