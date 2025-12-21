@@ -51,16 +51,22 @@ jest.mock('expo-image-picker', () => ({
   },
 }), { virtual: true });
 
-// Mock expo-crypto
-jest.mock('expo-crypto', () => {
+// Mock react-native-quick-crypto
+jest.mock('react-native-quick-crypto', () => {
   const crypto = require('crypto');
   return {
-    digestStringAsync: jest.fn((algorithm, data) => {
-      return Promise.resolve(crypto.createHash('sha256').update(data).digest('hex'));
+    createHash: jest.fn((algorithm) => {
+      const hash = crypto.createHash(algorithm);
+      return {
+        update: jest.fn((data) => {
+          hash.update(data);
+          return {
+            digest: jest.fn((encoding) => hash.digest(encoding)),
+          };
+        }),
+        digest: jest.fn((encoding) => hash.digest(encoding)),
+      };
     }),
-    CryptoDigestAlgorithm: {
-      SHA256: 'SHA256',
-    },
   };
 }, { virtual: true });
 
