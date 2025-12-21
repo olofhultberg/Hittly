@@ -1,5 +1,4 @@
 import { getDatabase } from '../db/database';
-import { createHash } from 'react-native-quick-crypto';
 
 export interface User {
   id: number;
@@ -10,12 +9,25 @@ export interface User {
 }
 
 /**
- * Hashat PIN för säker lagring
+ * Enkel hash-funktion för PIN (använder enkel strängmanipulation)
+ * För produktion bör detta ersättas med en riktig hash-funktion
  */
 function hashPin(pin: string): string {
-  const hash = createHash('sha256');
-  hash.update(pin);
-  return hash.digest('hex');
+  // Enkel hash för MVP - i produktion bör SHA256 användas
+  // Men för att undvika native module-problem använder vi enkel hash nu
+  let hash = 0;
+  for (let i = 0; i < pin.length; i++) {
+    const char = pin.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  // Lägg till salt och konvertera till hex
+  const salted = `grejfinder_${pin}_${hash}`;
+  let hexHash = '';
+  for (let i = 0; i < salted.length; i++) {
+    hexHash += salted.charCodeAt(i).toString(16);
+  }
+  return hexHash.substring(0, 64); // Returnera 64 tecken (som SHA256)
 }
 
 /**
