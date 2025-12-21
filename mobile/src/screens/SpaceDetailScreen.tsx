@@ -16,7 +16,7 @@ import { Button } from '../components/Button';
 import { getBoxesBySpace, createBox, Box } from '../lib/boxes/boxes';
 import { getSpace } from '../lib/spaces/spaces';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 interface SpaceDetailScreenProps {
   spaceId: number;
