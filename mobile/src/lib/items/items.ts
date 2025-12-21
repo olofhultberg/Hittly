@@ -286,3 +286,11 @@ export async function removeTagFromItem(itemId: number, tagName: string): Promis
   }
 }
 
+export async function getItemCount(): Promise<number> {
+  const db = getDatabase();
+  const result = db.getFirstSync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM items'
+  );
+  return result?.count || 0;
+}
+

@@ -256,3 +256,47 @@ export async function moveBox(
 
   return await getBox(boxId);
 }
+
+export async function getAllBoxes(): Promise<Box[]> {
+  const db = getDatabase();
+  const results = db.getAllSync<{
+    id: number;
+    name: string;
+    space_id: number;
+    zone_id: number | null;
+    label_code: string;
+    created_at?: string;
+    updated_at?: string;
+  }>('SELECT * FROM boxes ORDER BY name ASC');
+
+  // Hämta bilder för alla lådor
+  const boxes = await Promise.all(
+    (results || []).map(async (r) => {
+      const imageResult = db.getFirstSync<{ uri: string }>(
+        'SELECT uri FROM box_images WHERE box_id = ? ORDER BY created_at DESC LIMIT 1',
+        [r.id]
+      );
+
+      return {
+        id: r.id,
+        name: r.name,
+        spaceId: r.space_id,
+        zoneId: r.zone_id,
+        labelCode: r.label_code,
+        imageUri: imageResult?.uri || null,
+        created_at: r.created_at,
+        updated_at: r.updated_at,
+      };
+    })
+  );
+
+  return boxes;
+}
+
+export async function getBoxCount(): Promise<number> {
+  const db = getDatabase();
+  const result = db.getFirstSync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM boxes'
+  );
+  return result?.count || 0;
+}

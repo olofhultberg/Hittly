@@ -2,32 +2,63 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { Logo } from '../components/Logo';
 import { Button } from '../components/Button';
 import { getAllSpaces } from '../lib/spaces/spaces';
+import { getBoxCount } from '../lib/boxes/boxes';
+import { getItemCount } from '../lib/items/items';
 import { clearUsers } from '../lib/db/database';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface DashboardScreenProps {
   onLogout: () => void;
   onSpaceSelect?: (spaceId: number) => void;
+  onFocus?: () => void;
 }
 
-export function DashboardScreen({ onLogout, onSpaceSelect }: DashboardScreenProps) {
+export function DashboardScreen({ onLogout, onSpaceSelect, onFocus }: DashboardScreenProps) {
   const [spaces, setSpaces] = useState<any[]>([]);
+  const [boxCount, setBoxCount] = useState(0);
+  const [itemCount, setItemCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadSpaces();
-  }, []);
-
-  const loadSpaces = async () => {
+  const loadData = useCallback(async () => {
     try {
-      const allSpaces = await getAllSpaces();
+      setLoading(true);
+      const [allSpaces, boxes, items] = await Promise.all([
+        getAllSpaces(),
+        getBoxCount(),
+        getItemCount(),
+      ]);
       setSpaces(allSpaces);
+      setBoxCount(boxes);
+      setItemCount(items);
     } catch (error) {
-      console.error('Kunde inte ladda utrymmen:', error);
+      console.error('Kunde inte ladda data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Ladda om data när skärmen blir fokuserad
+  useEffect(() => {
+    if (onFocus) {
+      const unsubscribe = () => {
+        loadData();
+      };
+      // Anropa onFocus när komponenten monteras eller när den får fokus
+      // Detta hanteras via App.tsx som kommer att anropa loadData när man navigerar tillbaka
+      return unsubscribe;
+    }
+  }, [onFocus, loadData]);
+
+  // Exponera loadData för extern användning
+  useEffect(() => {
+    if (onFocus) {
+      // onFocus callback kan användas av App.tsx för att trigga reload
+    }
+  }, [onFocus]);
 
   return (
     <View style={styles.container}>
@@ -94,11 +125,11 @@ export function DashboardScreen({ onLogout, onSpaceSelect }: DashboardScreenProp
             <Text style={styles.statLabel}>Utrymmen</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statNumber}>{boxCount}</Text>
             <Text style={styles.statLabel}>Lådor</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statNumber}>{itemCount}</Text>
             <Text style={styles.statLabel}>Saker</Text>
           </View>
         </View>

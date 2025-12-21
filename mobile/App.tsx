@@ -14,6 +14,7 @@ export default function App() {
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | null>(null);
   const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+  const [dashboardKey, setDashboardKey] = useState(0); // Key för att forcera re-render
 
   useEffect(() => {
     // Visa splash screen i 2 sekunder
@@ -23,6 +24,11 @@ export default function App() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // När man navigerar tillbaka till Dashboard, uppdatera den
+  const handleDashboardFocus = () => {
+    setDashboardKey((prev) => prev + 1);
+  };
 
   console.log('App - authState:', authState);
 
@@ -61,7 +67,10 @@ export default function App() {
         <>
           <BoxDetailScreen
             boxId={selectedBoxId}
-            onBack={() => setSelectedBoxId(null)}
+            onBack={() => {
+              setSelectedBoxId(null);
+              handleDashboardFocus(); // Uppdatera Dashboard när man går tillbaka
+            }}
           />
           <StatusBar style="auto" />
         </>
@@ -73,7 +82,10 @@ export default function App() {
         <>
           <SpaceDetailScreen
             spaceId={selectedSpaceId}
-            onBack={() => setSelectedSpaceId(null)}
+            onBack={() => {
+              setSelectedSpaceId(null);
+              handleDashboardFocus(); // Uppdatera Dashboard när man går tillbaka
+            }}
             onBoxSelect={(boxId) => setSelectedBoxId(boxId)}
           />
           <StatusBar style="auto" />
@@ -84,6 +96,7 @@ export default function App() {
     return (
       <>
         <DashboardScreen
+          key={dashboardKey}
           onLogout={logout}
           onSpaceSelect={(spaceId) => setSelectedSpaceId(spaceId)}
         />
