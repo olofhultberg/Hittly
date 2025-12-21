@@ -30,8 +30,15 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Logo />
-        <TouchableOpacity 
+        <View style={styles.headerLeft}>
+          <Logo />
+          <View style={styles.headerTitleContainer}>
+            <Text style={styles.headerTitle}>Dashboard</Text>
+            <Text style={styles.headerSubtitle}>Översikt över dina grejer</Text>
+          </View>
+        </View>
+        <Button
+          title="Logga ut"
           onPress={() => {
             Alert.alert(
               'Logga ut',
@@ -41,20 +48,13 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
                 { text: 'Logga ut', style: 'destructive', onPress: onLogout },
               ]
             );
-          }} 
-          style={styles.logoutButton}
-        >
-          <Text style={styles.logoutText}>Logga ut</Text>
-        </TouchableOpacity>
+          }}
+          variant="secondary"
+        />
       </View>
 
       <ScrollView style={styles.content}>
-        <View style={styles.dashboardHeader}>
-          <Text style={styles.dashboardTitle}>Dashboard</Text>
-          <Text style={styles.dashboardSubtitle}>Översikt över dina grejer</Text>
-        </View>
-        
-        <Text style={styles.title}>Mina platser</Text>
+        <Text style={styles.sectionTitle}>Mina platser</Text>
 
         {loading ? (
           <Text style={styles.emptyText}>Laddar...</Text>
@@ -112,41 +112,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
+    gap: 16,
   },
-  logoutButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
   },
-  logoutText: {
-    color: '#64748B',
+  headerTitleContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 2,
+  },
+  headerSubtitle: {
     fontSize: 14,
-    fontWeight: '500',
+    color: '#64748B',
   },
   content: {
     flex: 1,
     padding: 20,
   },
-  dashboardHeader: {
-    marginBottom: 32,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  dashboardTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 4,
-  },
-  dashboardSubtitle: {
-    fontSize: 16,
-    color: '#64748B',
-  },
-  title: {
-    fontSize: 24,
+  sectionTitle: {
+    fontSize: 20,
     fontWeight: '600',
     color: '#0F172A',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   emptyContainer: {
     alignItems: 'center',
