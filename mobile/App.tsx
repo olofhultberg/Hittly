@@ -6,6 +6,7 @@ import { DashboardScreen } from './src/screens/DashboardScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { SpaceDetailScreen } from './src/screens/SpaceDetailScreen';
 import { BoxDetailScreen } from './src/screens/BoxDetailScreen';
+import { SearchScreen } from './src/screens/SearchScreen';
 import { SplashScreen } from './src/screens/SplashScreen';
 import { useAuth } from './src/hooks/useAuth';
 
@@ -13,6 +14,7 @@ export default function App() {
   const { authState, login, logout, startOnboarding, completeOnboarding } = useAuth();
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | null>(null);
   const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [dashboardKey, setDashboardKey] = useState(0); // Key för att forcera re-render
 
@@ -62,6 +64,20 @@ export default function App() {
   }
 
   if (authState === 'loggedIn') {
+    if (showSearch) {
+      return (
+        <>
+          <SearchScreen
+            onBack={() => {
+              setShowSearch(false);
+              handleDashboardFocus(); // Uppdatera Dashboard när man går tillbaka
+            }}
+          />
+          <StatusBar style="auto" />
+        </>
+      );
+    }
+
     if (selectedBoxId) {
       return (
         <>
@@ -99,6 +115,7 @@ export default function App() {
           key={dashboardKey}
           onLogout={logout}
           onSpaceSelect={(spaceId) => setSelectedSpaceId(spaceId)}
+          onSearch={() => setShowSearch(true)}
         />
         <StatusBar style="auto" />
       </>

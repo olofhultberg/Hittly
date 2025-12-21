@@ -10,9 +10,10 @@ import { useState, useEffect, useCallback } from 'react';
 interface DashboardScreenProps {
   onLogout: () => void;
   onSpaceSelect?: (spaceId: number) => void;
+  onSearch?: () => void;
 }
 
-export function DashboardScreen({ onLogout, onSpaceSelect }: DashboardScreenProps) {
+export function DashboardScreen({ onLogout, onSpaceSelect, onSearch }: DashboardScreenProps) {
   const [spaces, setSpaces] = useState<any[]>([]);
   const [boxCount, setBoxCount] = useState(0);
   const [itemCount, setItemCount] = useState(0);
@@ -54,20 +55,27 @@ export function DashboardScreen({ onLogout, onSpaceSelect }: DashboardScreenProp
             </Text>
           </View>
         </View>
-        <Button
-          title="Logga ut"
-          onPress={() => {
-            Alert.alert(
-              'Logga ut',
-              'Är du säker på att du vill logga ut?',
-              [
-                { text: 'Avbryt', style: 'cancel' },
-                { text: 'Logga ut', style: 'destructive', onPress: onLogout },
-              ]
-            );
-          }}
-          variant="secondary"
-        />
+        <View style={styles.headerRight}>
+          <Button
+            title="🔍"
+            onPress={() => onSearch?.()}
+            variant="ghost"
+          />
+          <Button
+            title="Logga ut"
+            onPress={() => {
+              Alert.alert(
+                'Logga ut',
+                'Är du säker på att du vill logga ut?',
+                [
+                  { text: 'Avbryt', style: 'cancel' },
+                  { text: 'Logga ut', style: 'destructive', onPress: onLogout },
+                ]
+              );
+            }}
+            variant="secondary"
+          />
+        </View>
       </View>
 
       <ScrollView style={styles.content}>
@@ -184,6 +192,11 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 14,
     color: '#64748B',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
   },
   content: {
     flex: 1,
