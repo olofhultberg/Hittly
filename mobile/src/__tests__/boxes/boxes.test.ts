@@ -140,5 +140,51 @@ describe('Boxes (Lådor) CRUD', () => {
       await expect(moveBox(99999, testSpaceId, null)).rejects.toThrow('Låda hittades inte');
     });
   });
+
+  describe('Box images (Låd-bilder)', () => {
+    it('sparar bild-URI när låda skapas med bild', async () => {
+      const box = await createBox({
+        name: 'Låda med bild',
+        spaceId: testSpaceId,
+        imageUri: 'file://path/to/image.jpg',
+      });
+
+      const retrieved = await getBox(box.id);
+      expect(retrieved).toBeDefined();
+      expect(retrieved?.imageUri).toBe('file://path/to/image.jpg');
+    });
+
+    it('returnerar null för imageUri om ingen bild finns', async () => {
+      const box = await createBox({
+        name: 'Låda utan bild',
+        spaceId: testSpaceId,
+      });
+
+      const retrieved = await getBox(box.id);
+      expect(retrieved).toBeDefined();
+      expect(retrieved?.imageUri).toBeNull();
+    });
+
+    it('hämtar bild-URI när lådor listas per utrymme', async () => {
+      await createBox({
+        name: 'Låda 1',
+        spaceId: testSpaceId,
+        imageUri: 'file://path/to/image1.jpg',
+      });
+      await createBox({
+        name: 'Låda 2',
+        spaceId: testSpaceId,
+      });
+
+      const boxes = await getBoxesBySpace(testSpaceId);
+      expect(boxes.length).toBeGreaterThanOrEqual(2);
+      
+      const boxWithImage = boxes.find(b => b.name === 'Låda 1');
+      const boxWithoutImage = boxes.find(b => b.name === 'Låda 2');
+      
+      expect(boxWithImage?.imageUri).toBe('file://path/to/image1.jpg');
+      expect(boxWithoutImage?.imageUri).toBeNull();
+    });
+  });
 });
 

@@ -1,12 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { useState } from 'react';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { DashboardScreen } from './src/screens/DashboardScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
+import { SpaceDetailScreen } from './src/screens/SpaceDetailScreen';
 import { useAuth } from './src/hooks/useAuth';
 
 export default function App() {
   const { authState, login, logout, startOnboarding, completeOnboarding } = useAuth();
+  const [selectedSpaceId, setSelectedSpaceId] = useState<number | null>(null);
 
   console.log('App - authState:', authState);
 
@@ -31,9 +34,24 @@ export default function App() {
   }
 
   if (authState === 'loggedIn') {
+    if (selectedSpaceId) {
+      return (
+        <>
+          <SpaceDetailScreen
+            spaceId={selectedSpaceId}
+            onBack={() => setSelectedSpaceId(null)}
+          />
+          <StatusBar style="auto" />
+        </>
+      );
+    }
+
     return (
       <>
-        <DashboardScreen onLogout={logout} />
+        <DashboardScreen
+          onLogout={logout}
+          onSpaceSelect={(spaceId) => setSelectedSpaceId(spaceId)}
+        />
         <StatusBar style="auto" />
       </>
     );

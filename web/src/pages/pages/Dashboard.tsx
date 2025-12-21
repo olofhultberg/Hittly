@@ -1,4 +1,5 @@
-import { StatCard } from "../components/StatCard";
+import { StatCard } from "../../components/components/StatCard";
+import React from "react";
 
 export default function DashboardPage() {
   return (
@@ -26,6 +27,15 @@ export default function DashboardPage() {
                 {name:"Skruvdragare", box:"Låda 2", space:"Garage"},
               ].map((r,i)=>(
                 <tr key={i} className="border-t">
-                  <td className="py-2">{r.name}</td><td>{r.box}</td><td>{r.space}</td>
+                  <td className="py-2">{r.name ? r.name : "-"}</td>
+                  <td>{r.box ? r.box : "-"}</td>
+                  <td>{r.space ? r.space : "-"}</td>
                 </tr>
-             
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

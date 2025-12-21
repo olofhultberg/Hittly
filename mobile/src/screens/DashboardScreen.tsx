@@ -7,9 +7,10 @@ import { useState, useEffect } from 'react';
 
 interface DashboardScreenProps {
   onLogout: () => void;
+  onSpaceSelect?: (spaceId: number) => void;
 }
 
-export function DashboardScreen({ onLogout }: DashboardScreenProps) {
+export function DashboardScreen({ onLogout, onSpaceSelect }: DashboardScreenProps) {
   const [spaces, setSpaces] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,12 +70,16 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
         ) : (
           <View style={styles.spacesList}>
             {spaces.map((space) => (
-              <View key={space.id} style={styles.spaceCard}>
+              <TouchableOpacity
+                key={space.id}
+                style={styles.spaceCard}
+                onPress={() => onSpaceSelect?.(space.id)}
+              >
                 <Text style={styles.spaceName}>{space.name}</Text>
                 <Text style={styles.spaceDate}>
                   Skapad: {new Date(space.created_at).toLocaleDateString('sv-SE')}
                 </Text>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}

@@ -7,6 +7,7 @@ export interface Box {
   spaceId: number;
   zoneId?: number | null;
   labelCode: string;
+  imageUri?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -15,6 +16,7 @@ export interface CreateBoxInput {
   name: string;
   spaceId: number;
   zoneId?: number | null;
+  imageUri?: string | null;
 }
 
 export interface UpdateBoxInput {
@@ -62,7 +64,17 @@ export async function createBox(input: CreateBoxInput): Promise<Box> {
     [input.name.trim(), input.spaceId, input.zoneId || null, labelCode]
   );
 
-  const box = await getBox(result.lastInsertRowId);
+  const boxId = result.lastInsertRowId;
+
+  // Spara bild om den finns
+  if (input.imageUri) {
+    db.runSync(
+      'INSERT INTO box_images (box_id, uri) VALUES (?, ?)',
+      [boxId, input.imageUri]
+    );
+  }
+
+  const box = await getBox(boxId);
   if (!box) {
     throw new Error('Kunde inte skapa låda');
   }
@@ -86,12 +98,19 @@ export async function getBox(id: number): Promise<Box | null> {
     return null;
   }
 
+  // Hämta bild-URI om den finns
+  const imageResult = db.getFirstSync<{ uri: string }>(
+    'SELECT uri FROM box_images WHERE box_id = ? ORDER BY created_at DESC LIMIT 1',
+    [id]
+  );
+
   return {
     id: result.id,
     name: result.name,
     spaceId: result.space_id,
     zoneId: result.zone_id,
     labelCode: result.label_code,
+    imageUri: imageResult?.uri || null,
     created_at: result.created_at,
     updated_at: result.updated_at,
   };
@@ -109,15 +128,28 @@ export async function getBoxesBySpace(spaceId: number): Promise<Box[]> {
     updated_at?: string;
   }>('SELECT * FROM boxes WHERE space_id = ? ORDER BY name ASC', [spaceId]);
 
-  return (results || []).map((r) => ({
-    id: r.id,
-    name: r.name,
-    spaceId: r.space_id,
-    zoneId: r.zone_id,
-    labelCode: r.label_code,
-    created_at: r.created_at,
-    updated_at: r.updated_at,
-  }));
+  // Hämta bilder för alla lådor
+  const boxes = await Promise.all(
+    (results || []).map(async (r) => {
+      const imageResult = db.getFirstSync<{ uri: string }>(
+        'SELECT uri FROM box_images WHERE box_id = ? ORDER BY created_at DESC LIMIT 1',
+        [r.id]
+      );
+
+      return {
+        id: r.id,
+        name: r.name,
+        spaceId: r.space_id,
+        zoneId: r.zone_id,
+        labelCode: r.label_code,
+        imageUri: imageResult?.uri || null,
+        created_at: r.created_at,
+        updated_at: r.updated_at,
+      };
+    })
+  );
+
+  return boxes;
 }
 
 export async function updateBox(id: number, input: UpdateBoxInput): Promise<Box | null> {

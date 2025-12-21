@@ -101,6 +101,14 @@ function initializeDatabase(db: SQLite.SQLiteDatabase): void {
       FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS box_images (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      box_id INTEGER NOT NULL,
+      uri TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (box_id) REFERENCES boxes(id) ON DELETE CASCADE
+    );
+
     CREATE TABLE IF NOT EXISTS guests_local (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       pin TEXT NOT NULL,
@@ -129,6 +137,7 @@ export function resetDatabase(): void {
   testDb.execSync(`
     DROP TABLE IF EXISTS item_tags;
     DROP TABLE IF EXISTS item_images;
+    DROP TABLE IF EXISTS box_images;
     DROP TABLE IF EXISTS items;
     DROP TABLE IF EXISTS tags;
     DROP TABLE IF EXISTS boxes;
