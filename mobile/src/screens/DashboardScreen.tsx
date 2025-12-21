@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { Logo } from '../components/Logo';
 import { Button } from '../components/Button';
 import { getAllSpaces } from '../lib/spaces/spaces';
+import { clearUsers } from '../lib/db/database';
 import { useState, useEffect } from 'react';
 
 interface DashboardScreenProps {
@@ -91,6 +92,36 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
             <Text style={styles.statNumber}>0</Text>
             <Text style={styles.statLabel}>Saker</Text>
           </View>
+        </View>
+
+        <View style={styles.debugSection}>
+          <Button
+            title="Återställ PIN (Test)"
+            onPress={() => {
+              Alert.alert(
+                'Återställ PIN',
+                'Detta kommer radera din användare och alla data. Är du säker?',
+                [
+                  { text: 'Avbryt', style: 'cancel' },
+                  {
+                    text: 'Återställ',
+                    style: 'destructive',
+                    onPress: () => {
+                      try {
+                        clearUsers();
+                        Alert.alert('Klart', 'PIN återställt. Starta om appen för att skapa ny PIN.', [
+                          { text: 'OK', onPress: onLogout },
+                        ]);
+                      } catch (error) {
+                        Alert.alert('Fel', 'Kunde inte återställa PIN');
+                      }
+                    },
+                  },
+                ]
+              );
+            }}
+            variant="ghost"
+          />
         </View>
       </ScrollView>
     </View>
@@ -206,6 +237,12 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     color: '#64748B',
+  },
+  debugSection: {
+    marginTop: 32,
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
   },
 });
 
