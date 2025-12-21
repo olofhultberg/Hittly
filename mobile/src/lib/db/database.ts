@@ -1,9 +1,19 @@
 import * as SQLite from 'expo-sqlite';
+import { Platform } from 'react-native';
 
 let db: SQLite.SQLiteDatabase | null = null;
 
 export function getDatabase(): SQLite.SQLiteDatabase {
   if (!db) {
+    // SQLite fungerar inte i web-miljö utan extra konfiguration
+    // För web skulle vi behöva använda IndexedDB eller localStorage
+    // För nu, låt oss bara krascha tydligt i web om någon försöker använda det
+    if (Platform.OS === 'web') {
+      throw new Error(
+        'SQLite stöds inte i web-miljö. Använd mobilapp (iOS/Android) istället.'
+      );
+    }
+    
     db = SQLite.openDatabaseSync('grejfinder.db');
     initializeDatabase(db);
   }
