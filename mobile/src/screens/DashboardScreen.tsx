@@ -10,10 +10,9 @@ import { useState, useEffect, useCallback } from 'react';
 interface DashboardScreenProps {
   onLogout: () => void;
   onSpaceSelect?: (spaceId: number) => void;
-  onFocus?: () => void;
 }
 
-export function DashboardScreen({ onLogout, onSpaceSelect, onFocus }: DashboardScreenProps) {
+export function DashboardScreen({ onLogout, onSpaceSelect }: DashboardScreenProps) {
   const [spaces, setSpaces] = useState<any[]>([]);
   const [boxCount, setBoxCount] = useState(0);
   const [itemCount, setItemCount] = useState(0);
@@ -40,25 +39,6 @@ export function DashboardScreen({ onLogout, onSpaceSelect, onFocus }: DashboardS
   useEffect(() => {
     loadData();
   }, [loadData]);
-
-  // Ladda om data när skärmen blir fokuserad
-  useEffect(() => {
-    if (onFocus) {
-      const unsubscribe = () => {
-        loadData();
-      };
-      // Anropa onFocus när komponenten monteras eller när den får fokus
-      // Detta hanteras via App.tsx som kommer att anropa loadData när man navigerar tillbaka
-      return unsubscribe;
-    }
-  }, [onFocus, loadData]);
-
-  // Exponera loadData för extern användning
-  useEffect(() => {
-    if (onFocus) {
-      // onFocus callback kan användas av App.tsx för att trigga reload
-    }
-  }, [onFocus]);
 
   return (
     <View style={styles.container}>
