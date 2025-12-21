@@ -8,6 +8,8 @@ import { useAuth } from './src/hooks/useAuth';
 export default function App() {
   const { authState, login, logout, startOnboarding, completeOnboarding } = useAuth();
 
+  console.log('App - authState:', authState);
+
   if (authState === 'checking') {
     return (
       <>

@@ -100,6 +100,15 @@ function initializeDatabase(db: SQLite.SQLiteDatabase): void {
   `);
 }
 
+/**
+ * Rensar alla användare från databasen (användbart för test/reset)
+ */
+export function clearUsers(): void {
+  const db = getDatabase();
+  db.execSync('DELETE FROM users');
+  db.execSync('DELETE FROM onboarding_status');
+}
+
 export function resetDatabase(): void {
   if (db) {
     db.closeSync();
@@ -121,4 +130,3 @@ export function resetDatabase(): void {
   `);
   testDb.closeSync();
 }
-

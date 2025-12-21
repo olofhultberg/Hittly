@@ -15,8 +15,11 @@ export function useAuth() {
   const checkAuthStatus = async () => {
     try {
       const user = await getUser();
+      console.log('Auth check - user:', user ? 'exists' : 'not found');
+      
       if (!user) {
         // Ingen användare finns - visa login för att skapa PIN
+        console.log('No user found - showing login');
         setAuthState('loggedOut');
         setIsAuthenticated(false);
         return;
@@ -25,6 +28,8 @@ export function useAuth() {
       // Användare finns - kolla onboarding-status
       try {
         const showOnboarding = await shouldShowOnboarding();
+        console.log('Onboarding needed:', showOnboarding);
+        
         if (showOnboarding) {
           setAuthState('onboarding');
           setIsAuthenticated(false);
@@ -34,6 +39,7 @@ export function useAuth() {
         }
       } catch (error) {
         // Om onboarding-check misslyckas, anta att onboarding behövs
+        console.error('Onboarding check error:', error);
         setAuthState('onboarding');
         setIsAuthenticated(false);
       }
