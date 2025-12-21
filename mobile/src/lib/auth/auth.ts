@@ -157,12 +157,17 @@ export async function validatePin(pin: string): Promise<boolean> {
  * Kollar om onboarding är slutförd
  */
 export async function isOnboardingComplete(): Promise<boolean> {
-  const db = getDatabase();
-  const result = db.getFirstSync<{ is_complete: number }>(
-    'SELECT is_complete FROM onboarding_status WHERE id = 1'
-  );
+  try {
+    const db = getDatabase();
+    const result = db.getFirstSync<{ is_complete: number }>(
+      'SELECT is_complete FROM onboarding_status WHERE id = 1'
+    );
 
-  return result ? result.is_complete === 1 : false;
+    return result ? result.is_complete === 1 : false;
+  } catch (error) {
+    // Om tabellen är tom eller inte finns, är onboarding inte slutförd
+    return false;
+  }
 }
 
 /**

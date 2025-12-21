@@ -16,20 +16,30 @@ export function useAuth() {
     try {
       const user = await getUser();
       if (!user) {
+        // Ingen användare finns - visa login för att skapa PIN
         setAuthState('loggedOut');
         setIsAuthenticated(false);
         return;
       }
 
-      const showOnboarding = await shouldShowOnboarding();
-      if (showOnboarding) {
+      // Användare finns - kolla onboarding-status
+      try {
+        const showOnboarding = await shouldShowOnboarding();
+        if (showOnboarding) {
+          setAuthState('onboarding');
+          setIsAuthenticated(false);
+        } else {
+          setAuthState('loggedIn');
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        // Om onboarding-check misslyckas, anta att onboarding behövs
         setAuthState('onboarding');
         setIsAuthenticated(false);
-      } else {
-        setAuthState('loggedIn');
-        setIsAuthenticated(true);
       }
     } catch (error) {
+      // Vid fel, visa login-skärm
+      console.error('Auth check error:', error);
       setAuthState('loggedOut');
       setIsAuthenticated(false);
     }
