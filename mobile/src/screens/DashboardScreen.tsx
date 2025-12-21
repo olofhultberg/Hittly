@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Logo } from '../components/Logo';
 import { Button } from '../components/Button';
 import { getAllSpaces } from '../lib/spaces/spaces';
@@ -31,12 +31,29 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Logo />
-        <TouchableOpacity onPress={onLogout} style={styles.logoutButton}>
+        <TouchableOpacity 
+          onPress={() => {
+            Alert.alert(
+              'Logga ut',
+              'Är du säker på att du vill logga ut?',
+              [
+                { text: 'Avbryt', style: 'cancel' },
+                { text: 'Logga ut', style: 'destructive', onPress: onLogout },
+              ]
+            );
+          }} 
+          style={styles.logoutButton}
+        >
           <Text style={styles.logoutText}>Logga ut</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content}>
+        <View style={styles.dashboardHeader}>
+          <Text style={styles.dashboardTitle}>Dashboard</Text>
+          <Text style={styles.dashboardSubtitle}>Översikt över dina grejer</Text>
+        </View>
+        
         <Text style={styles.title}>Mina platser</Text>
 
         {loading ? (
@@ -108,6 +125,22 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+  },
+  dashboardHeader: {
+    marginBottom: 32,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  dashboardTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 4,
+  },
+  dashboardSubtitle: {
+    fontSize: 16,
+    color: '#64748B',
   },
   title: {
     fontSize: 24,
