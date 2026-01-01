@@ -126,10 +126,66 @@ Projektet är konfigurerat för deployment till Render med PostgreSQL-databas.
    - Render kommer automatiskt bygga och deploya din applikation
    - Migrations appliceras automatiskt vid första start
 
+### Kör migrations via Render CLI
+
+**OBS:** Runtime-containern använder endast .NET runtime (inte SDK), så `dotnet ef` är inte tillgängligt direkt. Migrations körs automatiskt vid app-start via `Program.cs`, men om det misslyckas kan du använda följande metoder:
+
+#### Metod 1: Kolla loggar först (Rekommenderat)
+
+Kontrollera om migrations körs automatiskt och varför de misslyckas:
+```bash
+# Hitta service ID
+render services
+
+# Kolla loggar för migrations-relaterade meddelanden
+render logs --resources <service-id> --text "migration" --tail
+render logs --resources <service-id> --text "Database" --tail
+```
+
+#### Metod 2: Använd Program.cs Migrate() (Automatiskt)
+
+Applikationen försöker automatiskt köra migrations vid start via `context.Database.Migrate()` i `Program.cs`. Om detta misslyckas:
+
+1. **Kontrollera connection string:**
+   ```bash
+   render services  # Hitta service ID
+   # I Render dashboard, kontrollera att ConnectionStrings__DefaultConnection är korrekt satt
+   ```
+
+2. **Starta om servicen:**
+   ```bash
+   render restart <service-id>
+   ```
+
+3. **Följ loggarna:**
+   ```bash
+   render logs --resources <service-id> --tail
+   ```
+
+#### Metod 3: Kör migrations lokalt mot Render-databasen
+
+Om du behöver köra migrations manuellt, gör det lokalt mot Render-databasen:
+
+1. **Hämta connection string från Render dashboard:**
+   - Gå till din PostgreSQL-databas i Render
+   - Kopiera "Internal Database URL" eller "Connection String"
+
+2. **Kör migrations lokalt:**
+   ```bash
+   cd backend
+   export ConnectionStrings__DefaultConnection="<din-render-connection-string>"
+   dotnet ef database update
+   ```
+
+#### Metod 4: Uppdatera Dockerfile (Avancerat)
+
+Om du behöver köra migrations i containern, uppdatera Dockerfile för att inkludera SDK eller EF tools. Detta kräver dock en större ändring av Dockerfile.
+
 ### Viktigt
 - På Render Free tier sover applikationen efter 15 minuters inaktivitet
 - Första requesten efter sleep kan ta 30-60 sekunder
 - PostgreSQL connection string hämtas automatiskt från databasen i Render
+- Om migrations misslyckas, kontrollera att `ConnectionStrings__DefaultConnection` är korrekt satt
 
 ## Testning
 
