@@ -45,7 +45,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <ScreenHeader
-        title="Välkommen till Findly!"
+        title="Välkommen till Hittly!"
         description="För att komma igång, skapa ditt första utrymme där du kan organisera dina grejer."
       />
       <ScrollView

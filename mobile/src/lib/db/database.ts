@@ -14,7 +14,7 @@ export function getDatabase(): SQLite.SQLiteDatabase {
       );
     }
     
-    db = SQLite.openDatabaseSync('findly.db');
+    db = SQLite.openDatabaseSync('hittly.db');
     initializeDatabase(db);
   }
   return db;
@@ -133,7 +133,7 @@ export function resetDatabase(): void {
     db = null;
   }
   // I test-miljön kan vi återställa databasen
-  const testDb = SQLite.openDatabaseSync('findly.db');
+  const testDb = SQLite.openDatabaseSync('hittly.db');
   testDb.execSync(`
     DROP TABLE IF EXISTS item_tags;
     DROP TABLE IF EXISTS item_images;

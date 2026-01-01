@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 
 interface LogoProps {
   withText?: boolean;
@@ -8,11 +8,10 @@ export function Logo({ withText = true }: LogoProps) {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/findly-logo.png')}
+        source={require('../../assets/hittly-logo.png')}
         style={styles.logoImage}
         resizeMode="contain"
       />
-      {withText && <Text style={styles.text}>Findly</Text>}
     </View>
   );
 }
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#0F172A',
+    color: '#5B21B6',
   },
 });
 
@@ -39,11 +38,10 @@ export const LogoLarge = () => {
   return (
     <View style={largeStyles.container}>
       <Image
-        source={require('../../assets/findly-logo.png')}
+        source={require('../../assets/hittly-logo.png')}
         style={largeStyles.logoImage}
         resizeMode="contain"
       />
-      <Text style={largeStyles.text}>Findly</Text>
     </View>
   );
 };
@@ -51,16 +49,11 @@ export const LogoLarge = () => {
 const largeStyles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    gap: 16,
+    justifyContent: 'center',
   },
   logoImage: {
-    width: 120,
-    height: 120,
-  },
-  text: {
-    fontSize: 36,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    width: 160,
+    height: 160,
   },
 });
 

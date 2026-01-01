@@ -89,7 +89,7 @@ export function DashboardScreen({ onLogout, onSpaceSelect, onSearch }: Dashboard
                 );
               }}
             >
-              <Feather name="log-out" size={20} color="#2563EB" />
+              <Feather name="log-out" size={20} color="#A855F7" />
             </TouchableOpacity>
           </View>
         }
@@ -117,7 +117,7 @@ export function DashboardScreen({ onLogout, onSpaceSelect, onSearch }: Dashboard
               >
                 <Text style={styles.spaceName}>{space.name}</Text>
                 <Text style={styles.spaceDate}>
-                  Skapad: {new Date(space.created_at).toLocaleDateString('sv-SE')}
+                  Skapad: {new Date(space.createdAt || space.created_at || Date.now()).toLocaleDateString('sv-SE')}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#2563EB',
+    borderColor: '#A855F7',
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#2563EB',
+    color: '#A855F7',
     marginBottom: 4,
   },
   statLabel: {
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#2563EB',
+    backgroundColor: '#A855F7',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   },
   modalClose: {
     fontSize: 16,
-    color: '#2563EB',
+    color: '#A855F7',
     fontWeight: '500',
   },
   modalContent: {

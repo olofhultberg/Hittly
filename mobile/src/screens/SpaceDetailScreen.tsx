@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   },
   modalClose: {
     fontSize: 16,
-    color: '#2563EB',
+    color: '#A855F7',
     fontWeight: '500',
   },
   modalContent: {

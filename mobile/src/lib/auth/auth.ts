@@ -1,194 +1,147 @@
-import { getDatabase } from '../db/database';
+import { apiClient, ApiError } from '../api/client';
 
 export interface User {
-  id: number;
-  pin: string; // OBS: Returneras inte i produktion, endast för test
-  pin_hash: string;
-  created_at: string;
-  updated_at?: string;
+  id: string;
+  email: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  userId: string;
 }
 
 /**
- * Enkel hash-funktion för PIN (använder enkel strängmanipulation)
- * För produktion bör detta ersättas med en riktig hash-funktion
+ * Validerar e-postformat
  */
-function hashPin(pin: string): string {
-  // Enkel hash för MVP - i produktion bör SHA256 användas
-  // Men för att undvika native module-problem använder vi enkel hash nu
-  let hash = 0;
-  for (let i = 0; i < pin.length; i++) {
-    const char = pin.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  // Lägg till salt och konvertera till hex
-  const salted = `findly_${pin}_${hash}`;
-  let hexHash = '';
-  for (let i = 0; i < salted.length; i++) {
-    hexHash += salted.charCodeAt(i).toString(16);
-  }
-  return hexHash.substring(0, 64); // Returnera 64 tecken (som SHA256)
-}
-
-/**
- * Validerar PIN-format (exakt 4 siffror)
- */
-function validatePinFormat(pin: string): void {
-  if (!/^\d{4}$/.test(pin)) {
-    throw new Error('PIN måste vara 4 siffror');
+function validateEmail(email: string): void {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new Error('Ogiltig e-postadress');
   }
 }
 
 /**
- * Skapar en ny användare med PIN
+ * Validerar lösenord (minst 8 tecken)
  */
-export async function createUser(pin: string): Promise<User> {
-  validatePinFormat(pin);
-
-  const db = getDatabase();
-
-  // Kolla om användare redan finns
-  const existing = db.getFirstSync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM users'
-  );
-  if (existing && existing.count > 0) {
-    throw new Error('Användare finns redan');
+function validatePassword(password: string): void {
+  if (password.length < 8) {
+    throw new Error('Lösenord måste vara minst 8 tecken');
   }
-
-  const pinHash = hashPin(pin);
-
-  db.runSync('INSERT INTO users (pin_hash) VALUES (?)', [pinHash]);
-
-  const result = db.getFirstSync<{
-    id: number;
-    pin_hash: string;
-    created_at: string;
-  }>('SELECT id, pin_hash, created_at FROM users ORDER BY id DESC LIMIT 1');
-
-  if (!result) {
-    throw new Error('Kunde inte skapa användare');
-  }
-
-  return {
-    id: result.id,
-    pin, // Endast för test, ska inte exponeras i produktion
-    pin_hash: result.pin_hash,
-    created_at: result.created_at,
-  };
 }
 
 /**
- * Hämtar användare via id, eller första användaren om inget id anges
+ * Registrerar en ny användare
  */
-export async function getUser(id?: number): Promise<User | null> {
-  const db = getDatabase();
+export async function register(email: string, password: string): Promise<void> {
+  validateEmail(email);
+  validatePassword(password);
 
-  let result;
-  if (id) {
-    result = db.getFirstSync<{
-      id: number;
-      pin_hash: string;
-      created_at: string;
-      updated_at?: string;
-    }>('SELECT id, pin_hash, created_at, updated_at FROM users WHERE id = ?', [id]);
-  } else {
-    result = db.getFirstSync<{
-      id: number;
-      pin_hash: string;
-      created_at: string;
-      updated_at?: string;
-    }>('SELECT id, pin_hash, created_at, updated_at FROM users ORDER BY id ASC LIMIT 1');
-  }
-
-  if (!result) {
-    return null;
-  }
-
-  return {
-    id: result.id,
-    pin: '', // PIN returneras inte
-    pin_hash: result.pin_hash,
-    created_at: result.created_at,
-    updated_at: result.updated_at,
-  };
-}
-
-/**
- * Uppdaterar användarens PIN
- */
-export async function updateUserPin(
-  userId: number,
-  newPin: string,
-  currentPin?: string
-): Promise<User | null> {
-  validatePinFormat(newPin);
-
-  const db = getDatabase();
-  const user = await getUser(userId);
-
-  if (!user) {
-    throw new Error('Användare hittades inte');
-  }
-
-  // Om currentPin anges, validera det först
-  if (currentPin) {
-    const currentPinHash = await hashPin(currentPin);
-    if (currentPinHash !== user.pin_hash) {
-      throw new Error('Felaktigt nuvarande PIN');
+  try {
+    await apiClient.post('/api/Auth/register', {
+      email: email.trim(),
+      password,
+    } as RegisterRequest);
+  } catch (error) {
+    const apiError = error as ApiError;
+    if (apiError.errors) {
+      const errorMessages = Object.values(apiError.errors).flat();
+      throw new Error(errorMessages.join(', ') || apiError.message);
     }
+    throw new Error(apiError.message || 'Kunde inte registrera användare');
   }
-
-  const newPinHash = await hashPin(newPin);
-
-  db.runSync(
-    'UPDATE users SET pin_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-    [newPinHash, userId]
-  );
-
-  return await getUser(userId);
 }
 
 /**
- * Validerar PIN mot användarens lagrade PIN
+ * Loggar in användare
+ */
+export async function login(email: string, password: string): Promise<LoginResponse> {
+  validateEmail(email);
+  
+  if (!password || password.length === 0) {
+    throw new Error('Lösenord är obligatoriskt');
+  }
+
+  try {
+    const response = await apiClient.post<LoginResponse>('/api/Auth/login', {
+      email: email.trim(),
+      password,
+    } as LoginRequest);
+    
+    return response;
+  } catch (error) {
+    const apiError = error as ApiError;
+    throw new Error(apiError.message || 'Inloggning misslyckades');
+  }
+}
+
+/**
+ * Loggar ut användare
+ */
+export async function logout(): Promise<void> {
+  try {
+    await apiClient.post('/api/Auth/logout');
+  } catch (error) {
+    const apiError = error as ApiError;
+    throw new Error(apiError.message || 'Utloggning misslyckades');
+  }
+}
+
+/**
+ * Hämtar användare (för kompatibilitet med befintlig kod)
+ * OBS: Backend har inte denna endpoint ännu, returnerar null
+ */
+export async function getUser(id?: string): Promise<User | null> {
+  // Backend har inte en GET user endpoint ännu
+  // För nu returnerar vi null och förlitar oss på login-session
+  return null;
+}
+
+/**
+ * Validerar PIN (för kompatibilitet med befintlig kod)
+ * OBS: Backend använder e-post/lösenord, inte PIN
+ * Detta är en placeholder för att inte bryta befintlig kod
  */
 export async function validatePin(pin: string): Promise<boolean> {
-  validatePinFormat(pin);
-
-  const user = await getUser();
-  if (!user) {
-    throw new Error('Ingen användare finns');
-  }
-
-  const pinHash = hashPin(pin);
-  return pinHash === user.pin_hash;
+  // PIN-validering används inte längre med backend
+  // Returnera false för att tvinga användning av e-post/lösenord
+  return false;
 }
 
 /**
  * Kollar om onboarding är slutförd
+ * OBS: Backend har inte onboarding-endpoint ännu, använder localStorage som fallback
  */
 export async function isOnboardingComplete(): Promise<boolean> {
   try {
-    const db = getDatabase();
-    const result = db.getFirstSync<{ is_complete: number }>(
-      'SELECT is_complete FROM onboarding_status WHERE id = 1'
-    );
-
-    return result ? result.is_complete === 1 : false;
+    // För nu använder vi localStorage som fallback
+    // Backend kan implementera en endpoint för detta senare
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('onboarding_complete') === 'true';
+    }
+    return false;
   } catch (error) {
-    // Om tabellen är tom eller inte finns, är onboarding inte slutförd
     return false;
   }
 }
 
 /**
  * Markerar onboarding som slutförd
+ * OBS: Backend har inte onboarding-endpoint ännu, använder localStorage som fallback
  */
 export async function completeOnboarding(): Promise<void> {
-  const db = getDatabase();
-
-  // Skapa eller uppdatera onboarding-status
-  db.runSync(`
-    INSERT OR REPLACE INTO onboarding_status (id, is_complete, updated_at)
-    VALUES (1, 1, CURRENT_TIMESTAMP)
-  `);
+  // För nu använder vi localStorage som fallback
+  // Backend kan implementera en endpoint för detta senare
+  if (typeof window !== 'undefined' && window.localStorage) {
+    localStorage.setItem('onboarding_complete', 'true');
+  }
 }

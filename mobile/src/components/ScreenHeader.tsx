@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
-    color: '#2563EB',
+    color: '#A855F7',
     fontWeight: '500',
   },
   breadcrumbTextContainer: {

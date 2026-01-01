@@ -1,6 +1,6 @@
-# Findly
+# Hittly
 
-Monorepo-struktur för Findly-projektet.
+Monorepo-struktur för Hittly-projektet.
 
 ## Struktur
 

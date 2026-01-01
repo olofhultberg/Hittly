@@ -41,7 +41,7 @@ export function SearchFilters({ spaces, boxes, allTags, onChange }: Props) {
           {allTags.map(t=> (
             <button key={t}
               onClick={()=>toggleTag(t)}
-              className={`chip ${tags.includes(t) ? "bg-indigo-600 text-white" : ""}`}>
+              className={`chip ${tags.includes(t) ? "bg-purple-500 text-white" : ""}`}>
               {t}
             </button>
           ))}

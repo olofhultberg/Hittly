@@ -1,13 +1,13 @@
-# 🎨 Designspecifikation – Findly
+# 🎨 Designspecifikation – Hittly
 
 ## 1. Varumärke och känsla
 
-**Namn:** Findly  
+**Namn:** Hittly  
 **Tagline (förslag):** Hitta grejerna. Håll ordning.  
 **Ton:** Lekfull, hjälpsam, smart och pålitlig.  
 **Kärnkänsla:** Struktur utan stress – ett digitalt förråd med glimten i ögat.
 
-Findly ska kännas lättanvänd, lugn och modern.  
+Hittly ska kännas lättanvänd, lugn och modern.  
 Appen ska inge känslan av “jag hittar alltid det jag letar efter”.
 
 ---
@@ -16,7 +16,7 @@ Appen ska inge känslan av “jag hittar alltid det jag letar efter”.
 
 | Roll | Färg | Tailwind-klass | Användning |
 |------|------|----------------|-------------|
-| Primär | `#2563EB` | `indigo-600` | Knapp, ikoner, länkfärg |
+| Primär | `#A855F7` | `purple-500` | Knapp, ikoner, länkfärg |
 | Sekundär | `#10B981` | `emerald-500` | Bekräftelser, highlight |
 | Bakgrund ljus | `#F8FAFC` | `slate-50` | Appens standardbakgrund |
 | Text mörk | `#0F172A` | `slate-900` | Primär text |
@@ -47,13 +47,13 @@ Mörkt tema får läggas till efter MVP.
 4. Ikon och logotyp
 
 Appikon:
-	•	Vit låda + förstoringsglas på blå bakgrund (#2563EB → #3B82F6 gradient).
+	•	Vit låda + förstoringsglas på lila-cyan gradient bakgrund (#A855F7 → #67E8F9 gradient).
 	•	Rundade hörn (iOS standard).
 	•	Minimalistisk, igenkännbar även i liten storlek.
 
 Splashscreen:
-	•	Blå gradient (mörk till ljus).
-	•	Ikon centrerad, appnamnet Findly i vit text under.
+	•	Lila-cyan gradient (mörk lila till ljus cyan: #A855F7 → #67E8F9).
+	•	Ikon centrerad, appnamnet Hittly i vit text under.
 	•	Font: Semibold, rundad sans-serif (SF Pro / Inter).
 
 Format:
@@ -65,21 +65,21 @@ Format:
 5. UI-komponenter
 
 Buttons
-	•	Primär: fylld, blå bakgrund, vit text (bg-indigo-600 text-white)
-	•	Sekundär: outline (border-indigo-600 text-indigo-600)
+	•	Primär: fylld, lila bakgrund, vit text (bg-purple-500 text-white)
+	•	Sekundär: outline (border-purple-500 text-purple-500)
 	•	Ghost: ikon utan bakgrund
 
 
-    <Button className="bg-indigo-600 text-white rounded-lg px-5 py-3">Spara</Button>
+    <Button className="bg-purple-500 text-white rounded-lg px-5 py-3">Spara</Button>
 
     Inputs
 	•	Rundade kanter (rounded-lg), tunn border (border-slate-200)
-	•	Färgändring vid fokus (focus:border-indigo-500)
+	•	Färgändring vid fokus (focus:border-purple-500)
 	•	Placeholder i text-slate-400
 
 Taggar (chips)
 	•	Fyllda (bg-slate-100 text-slate-700)
-	•	Aktivt val: (bg-indigo-600 text-white)
+	•	Aktivt val: (bg-purple-500 text-white)
 
 Kort
 	•	bg-white shadow-sm rounded-xl border border-slate-200
@@ -89,7 +89,7 @@ Kort
 
 6. Ikoner & bildstil
 	•	Ikoner från @expo/vector-icons (Feather / Heroicons)
-	•	Enkel linjeikonografi (outline) i indigo 600
+	•	Enkel linjeikonografi (outline) i purple 500 (#A855F7)
 	•	Bilder i listor beskärs till rundade fyrkanter (rounded-md)
 	•	Tomt-tillstånd: lätt illustrerade ikoner i grått/blått (inte foton)
 
@@ -104,7 +104,7 @@ Navigering: Expo Router med 3 tabbar
 
 Floating Action Button (FAB):
 	•	Placering: nederhöger
-	•	Färg: bg-indigo-600
+	•	Färg: bg-purple-500 (#A855F7)
 	•	Ikon: plus (Feather)
 	•	Åtgärd: skapa ny sak
 
@@ -186,13 +186,13 @@ Feather
 13. Ikonfilnamn (för Expo-konfiguration)
 {
   "expo": {
-    "name": "Findly",
-    "slug": "findly",
+    "name": "Hittly",
+    "slug": "hittly",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2563EB"
+      "backgroundColor": "#A855F7"
     }
   }
 }

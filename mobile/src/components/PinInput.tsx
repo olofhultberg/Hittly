@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   dotFilled: {
-    backgroundColor: '#2563EB',
-    borderColor: '#2563EB',
+    backgroundColor: '#A855F7',
+    borderColor: '#A855F7',
   },
   error: {
     color: '#EF4444',

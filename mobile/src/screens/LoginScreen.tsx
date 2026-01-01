@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { PinInput } from '../components/PinInput';
 import { Button } from '../components/Button';
-import { validatePin, getUser, createUser } from '../lib/auth/auth';
+import { login, register } from '../lib/auth/auth';
 import { shouldShowOnboarding } from '../lib/onboarding/onboarding';
 
 interface LoginScreenProps {
@@ -12,23 +11,20 @@ interface LoginScreenProps {
 }
 
 export function LoginScreen({ onLoginSuccess, onShowOnboarding }: LoginScreenProps) {
-  const [pin, setPin] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isFirstTime, setIsFirstTime] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
-    checkFirstTime();
+    checkOnboarding();
   }, []);
 
-  const checkFirstTime = async () => {
+  const checkOnboarding = async () => {
     try {
-      const user = await getUser();
       const showOnboarding = await shouldShowOnboarding();
-      
-      if (!user) {
-        setIsFirstTime(true);
-      } else if (showOnboarding) {
+      if (showOnboarding) {
         onShowOnboarding();
       }
     } catch (error) {
@@ -36,8 +32,9 @@ export function LoginScreen({ onLoginSuccess, onShowOnboarding }: LoginScreenPro
     }
   };
 
-  const handlePinComplete = async () => {
-    if (pin.length !== 4) {
+  const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) {
+      setError('E-post och lösenord är obligatoriskt');
       return;
     }
 
@@ -45,37 +42,28 @@ export function LoginScreen({ onLoginSuccess, onShowOnboarding }: LoginScreenPro
     setError('');
 
     try {
-      if (isFirstTime) {
-        // Skapa ny användare
-        await createUser(pin);
-        setPin('');
+      if (isRegistering) {
+        // Registrera ny användare
+        await register(email.trim(), password);
+        setEmail('');
+        setPassword('');
         setLoading(false);
-        onShowOnboarding();
+        Alert.alert('Registrering lyckades', 'Du kan nu logga in', [
+          { text: 'OK', onPress: () => setIsRegistering(false) }
+        ]);
       } else {
-        // Validera PIN
-        const isValid = await validatePin(pin);
-        if (isValid) {
-          setPin('');
-          setLoading(false);
-          onLoginSuccess();
-        } else {
-          setError('Felaktigt PIN');
-          setPin('');
-          setLoading(false);
-        }
+        // Logga in
+        await login(email.trim(), password);
+        setEmail('');
+        setPassword('');
+        setLoading(false);
+        onLoginSuccess();
       }
     } catch (err: any) {
       setError(err.message || 'Ett fel uppstod');
-      setPin('');
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (pin.length === 4) {
-      handlePinComplete();
-    }
-  }, [pin]);
 
   return (
     <KeyboardAvoidingView
@@ -84,19 +72,62 @@ export function LoginScreen({ onLoginSuccess, onShowOnboarding }: LoginScreenPro
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <ScreenHeader
-        title={isFirstTime ? 'Skapa PIN' : 'Logga in'}
-        description={isFirstTime
-          ? 'Välj ett 4-siffrigt PIN för att skydda dina grejer'
-          : 'Ange ditt 4-siffriga PIN'}
+        title={isRegistering ? 'Registrera' : 'Logga in'}
+        description={isRegistering
+          ? 'Skapa ett konto för att komma igång'
+          : 'Ange dina inloggningsuppgifter'}
       />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
+          <View style={styles.formContainer}>
+            <Text style={styles.label}>E-post</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="din@epost.se"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+            />
 
-          <View style={styles.pinContainer}>
-            <PinInput pin={pin} onPinChange={setPin} error={error} />
+            <Text style={styles.label}>Lösenord</Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Minst 8 tecken"
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+            />
+
+            {error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : null}
+
+            <Button
+              title={isRegistering ? 'Registrera' : 'Logga in'}
+              onPress={handleSubmit}
+              disabled={loading || !email.trim() || !password.trim()}
+              style={styles.submitButton}
+            />
+
+            <Button
+              title={isRegistering ? 'Har redan konto? Logga in' : 'Ingen konto? Registrera'}
+              onPress={() => {
+                setIsRegistering(!isRegistering);
+                setError('');
+              }}
+              variant="text"
+              disabled={loading}
+              style={styles.toggleButton}
+            />
           </View>
         </View>
       </ScrollView>
@@ -119,9 +150,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pinContainer: {
+  formContainer: {
     width: '100%',
     maxWidth: 400,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: '#1E293B',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 14,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  submitButton: {
+    marginTop: 24,
+  },
+  toggleButton: {
+    marginTop: 16,
   },
 });
 

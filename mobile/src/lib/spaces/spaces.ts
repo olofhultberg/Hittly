@@ -1,10 +1,25 @@
-import { getDatabase } from '../db/database';
+import { apiClient, ApiError } from '../api/client';
 
 export interface Space {
   id: number;
   name: string;
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface SpaceDto {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface CreateSpaceDto {
+  name: string;
+}
+
+interface UpdateSpaceDto {
+  name: string;
 }
 
 export async function createSpace(name: string): Promise<Space> {
@@ -16,35 +31,54 @@ export async function createSpace(name: string): Promise<Space> {
     throw new Error('Namn får inte vara längre än 100 tecken');
   }
 
-  const db = getDatabase();
-  const result = db.runSync(
-    'INSERT INTO spaces (name) VALUES (?)',
-    [name.trim()]
-  );
+  try {
+    const response = await apiClient.post<SpaceDto>('/api/Spaces', {
+      name: name.trim(),
+    } as CreateSpaceDto);
 
-  const space = await getSpace(result.lastInsertRowId);
-  if (!space) {
-    throw new Error('Kunde inte skapa utrymme');
+    return {
+      id: response.id,
+      name: response.name,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+    };
+  } catch (error) {
+    const apiError = error as ApiError;
+    throw new Error(apiError.message || 'Kunde inte skapa utrymme');
   }
-
-  return space;
 }
 
 export async function getSpace(id: number): Promise<Space | null> {
-  const db = getDatabase();
-  const result = db.getFirstSync<Space>(
-    'SELECT * FROM spaces WHERE id = ?',
-    [id]
-  );
-
-  return result || null;
+  try {
+    const response = await apiClient.get<SpaceDto>(`/api/Spaces/${id}`);
+    return {
+      id: response.id,
+      name: response.name,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+    };
+  } catch (error) {
+    const apiError = error as ApiError;
+    if (apiError.status === 404) {
+      return null;
+    }
+    throw new Error(apiError.message || 'Kunde inte hämta utrymme');
+  }
 }
 
 export async function getAllSpaces(): Promise<Space[]> {
-  const db = getDatabase();
-  const result = db.getAllSync<Space>('SELECT * FROM spaces ORDER BY name ASC');
-
-  return result || [];
+  try {
+    const response = await apiClient.get<SpaceDto[]>('/api/Spaces');
+    return response.map((s) => ({
+      id: s.id,
+      name: s.name,
+      createdAt: s.createdAt,
+      updatedAt: s.updatedAt,
+    }));
+  } catch (error) {
+    const apiError = error as ApiError;
+    throw new Error(apiError.message || 'Kunde inte hämta utrymmen');
+  }
 }
 
 export async function updateSpace(id: number, name: string): Promise<Space | null> {
@@ -56,36 +90,32 @@ export async function updateSpace(id: number, name: string): Promise<Space | nul
     throw new Error('Namn får inte vara längre än 100 tecken');
   }
 
-  const existing = await getSpace(id);
-  if (!existing) {
-    throw new Error('Utrymme hittades inte');
+  try {
+    await apiClient.put(`/api/Spaces/${id}`, {
+      name: name.trim(),
+    } as UpdateSpaceDto);
+
+    return await getSpace(id);
+  } catch (error) {
+    const apiError = error as ApiError;
+    if (apiError.status === 404) {
+      throw new Error('Utrymme hittades inte');
+    }
+    throw new Error(apiError.message || 'Kunde inte uppdatera utrymme');
   }
-
-  const db = getDatabase();
-  db.runSync(
-    'UPDATE spaces SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-    [name.trim(), id]
-  );
-
-  return await getSpace(id);
 }
 
 export async function deleteSpace(id: number): Promise<void> {
-  const existing = await getSpace(id);
-  if (!existing) {
-    throw new Error('Utrymme hittades inte');
+  try {
+    await apiClient.delete(`/api/Spaces/${id}`);
+  } catch (error) {
+    const apiError = error as ApiError;
+    if (apiError.status === 404) {
+      throw new Error('Utrymme hittades inte');
+    }
+    if (apiError.status === 400) {
+      throw new Error(apiError.message || 'Kan inte ta bort utrymme med lådor');
+    }
+    throw new Error(apiError.message || 'Kunde inte ta bort utrymme');
   }
-
-  // Kontrollera om utrymmet har lådor
-  const db = getDatabase();
-  const boxes = db.getAllSync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM boxes WHERE space_id = ?',
-    [id]
-  );
-
-  if (boxes && boxes.length > 0 && boxes[0].count > 0) {
-    throw new Error('Kan inte ta bort utrymme med lådor');
-  }
-
-  db.runSync('DELETE FROM spaces WHERE id = ?', [id]);
 }

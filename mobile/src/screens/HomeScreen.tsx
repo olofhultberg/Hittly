@@ -5,7 +5,7 @@ export function HomeScreen() {
   return (
     <View style={styles.container}>
       <ScreenHeader
-        title="Välkommen till Findly"
+        title="Välkommen till Hittly"
         description="Hitta grejerna. Håll ordning."
       />
       <View style={styles.content}>

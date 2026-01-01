@@ -1,4 +1,4 @@
-# 📦 Findly – MVP Web APP
+# 📦 Hittly – MVP Web APP
 
 ## 1. Översikt
 

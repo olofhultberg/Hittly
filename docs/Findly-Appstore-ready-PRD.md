@@ -1,1 +1,1 @@
-# 📦 Findly – Appstore ready PRD Smartphone APP
+# 📦 Hittly – Appstore ready PRD Smartphone APP

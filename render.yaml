@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: hittly-backend
+    env: docker
+    plan: free
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:8080
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: hittly-db
+          property: connectionString
+      - key: RemoveBg__ApiKey
+        sync: false  # Sätt detta manuellt i Render dashboard
+
+databases:
+  - name: hittly-db
+    plan: free
+    databaseName: hittly
+    user: hittly
+

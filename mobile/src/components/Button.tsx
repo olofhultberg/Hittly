@@ -37,7 +37,7 @@ export function Button({
       disabled={disabled || loading}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#FFFFFF' : '#2563EB'} />
+        <ActivityIndicator color={variant === 'primary' ? '#FFFFFF' : '#A855F7'} />
       ) : (
         <Text style={textStyle}>{title}</Text>
       )}
@@ -55,12 +55,12 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   primary: {
-    backgroundColor: '#2563EB',
+    backgroundColor: '#A855F7',
   },
   secondary: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#2563EB',
+    borderColor: '#A855F7',
   },
   ghost: {
     backgroundColor: 'transparent',
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   secondaryText: {
-    color: '#2563EB',
+    color: '#A855F7',
   },
   ghostText: {
     color: '#64748B',

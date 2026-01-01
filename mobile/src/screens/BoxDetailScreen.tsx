@@ -18,6 +18,7 @@ import { getBox, updateBox, Box } from '../lib/boxes/boxes';
 import { getItemsByBox, createItem, Item } from '../lib/items/items';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
+import { removeBackground } from '../lib/images/images';
 
 interface BoxDetailScreenProps {
   boxId: number;
@@ -37,6 +38,7 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
   const [itemDescription, setItemDescription] = useState('');
   const [itemImageUri, setItemImageUri] = useState<string | null>(null);
   const [creatingItem, setCreatingItem] = useState(false);
+  const [removingBackground, setRemovingBackground] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -172,7 +174,28 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setItemImageUri(result.assets[0].uri);
+      const originalUri = result.assets[0].uri;
+      
+      // Automatiskt ta bort bakgrund
+      setRemovingBackground(true);
+      try {
+        const processedUri = await removeBackground(originalUri);
+        if (processedUri) {
+          setItemImageUri(processedUri);
+        } else {
+          // Om bakgrundsborttagning misslyckades, använd originalbilden
+          setItemImageUri(originalUri);
+          Alert.alert(
+            'Info',
+            'Kunde inte ta bort bakgrunden automatiskt. Använder originalbilden.'
+          );
+        }
+      } catch (error) {
+        console.error('Fel vid bakgrundsborttagning:', error);
+        setItemImageUri(originalUri);
+      } finally {
+        setRemovingBackground(false);
+      }
     }
   };
 
@@ -193,7 +216,28 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setItemImageUri(result.assets[0].uri);
+      const originalUri = result.assets[0].uri;
+      
+      // Automatiskt ta bort bakgrund
+      setRemovingBackground(true);
+      try {
+        const processedUri = await removeBackground(originalUri);
+        if (processedUri) {
+          setItemImageUri(processedUri);
+        } else {
+          // Om bakgrundsborttagning misslyckades, använd originalbilden
+          setItemImageUri(originalUri);
+          Alert.alert(
+            'Info',
+            'Kunde inte ta bort bakgrunden automatiskt. Använder originalbilden.'
+          );
+        }
+      } catch (error) {
+        console.error('Fel vid bakgrundsborttagning:', error);
+        setItemImageUri(originalUri);
+      } finally {
+        setRemovingBackground(false);
+      }
     }
   };
 
@@ -479,7 +523,11 @@ export function BoxDetailScreen({ boxId, onBack }: BoxDetailScreenProps) {
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>Bild (valfritt)</Text>
-              {itemImageUri ? (
+              {removingBackground ? (
+                <View style={styles.imagePreviewContainer}>
+                  <Text style={styles.processingText}>Tar bort bakgrund...</Text>
+                </View>
+              ) : itemImageUri ? (
                 <View style={styles.imagePreviewContainer}>
                   <Image source={{ uri: itemImageUri }} style={styles.imagePreview} />
                   <Button
@@ -647,7 +695,7 @@ const styles = StyleSheet.create({
   },
   modalClose: {
     fontSize: 16,
-    color: '#2563EB',
+    color: '#A855F7',
     fontWeight: '500',
   },
   modalContent: {
@@ -688,6 +736,12 @@ const styles = StyleSheet.create({
   modalButtons: {
     gap: 12,
     marginTop: 24,
+  },
+  processingText: {
+    fontSize: 14,
+    color: '#64748B',
+    textAlign: 'center',
+    paddingVertical: 20,
   },
 });
 

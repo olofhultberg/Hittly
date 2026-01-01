@@ -47,7 +47,7 @@ export default function App() {
     return (
       <>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#2563EB" />
+          <ActivityIndicator size="large" color="#A855F7" />
         </View>
         <StatusBar style="auto" />
       </>
