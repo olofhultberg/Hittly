@@ -22,7 +22,10 @@ if (string.IsNullOrEmpty(connectionString))
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlite(connectionString));
 }
-else if (connectionString.Contains("Host=") || connectionString.Contains("Server="))
+else if (connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase) ||
+         connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+         connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase) ||
+         connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase))
 {
     // PostgreSQL connection string detected
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
