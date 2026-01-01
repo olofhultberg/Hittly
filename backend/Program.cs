@@ -121,12 +121,55 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        
+        // Check if database exists and has tables
+        var canConnect = context.Database.CanConnect();
+        var pendingMigrations = context.Database.GetPendingMigrations().Any();
+        
+        if (!canConnect || pendingMigrations)
+        {
+            try
+            {
+                // Suppress the pending model changes warning for now
+                // In production, you should create proper migrations for PostgreSQL
+                context.Database.Migrate();
+                logger.LogInformation("Migrations applicerade framgångsrikt.");
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("pending changes"))
+            {
+                // If there are pending model changes, we need to create a new migration
+                // For now, log a warning and continue
+                logger.LogWarning("Det finns pending model changes. Skapa en ny migration för PostgreSQL med: dotnet ef migrations add MigrationName");
+                logger.LogWarning("Försöker skapa databas med EnsureCreated som fallback...");
+                
+                // Try EnsureCreated as fallback (only works if database is empty)
+                if (!canConnect)
+                {
+                    context.Database.EnsureCreated();
+                    logger.LogInformation("Databas skapad med EnsureCreated.");
+                }
+                else
+                {
+                    logger.LogError("Databas finns redan men migrations matchar inte modellen. Skapa en ny migration.");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Ett fel uppstod vid applicering av migrations.");
+                // Don't throw - let the app start, but migrations might not be applied
+            }
+        }
+        else
+        {
+            logger.LogInformation("Databas är uppdaterad, inga migrations behövs.");
+        }
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ett fel uppstod vid applicering av migrations.");
+        logger.LogError(ex, "Ett fel uppstod vid databashantering.");
+        // Don't throw - let the app start anyway
     }
 }
 
